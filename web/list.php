@@ -13,20 +13,30 @@
 // Returns
 // -------
 //
-function ciniki_directory_web_list($ciniki, $business_id) {
+function ciniki_directory_web_list($ciniki, $business_id, $cat_permalink) {
 
-	$strsql = "SELECT ciniki_directory_entries.id, category AS cname, name, url, description "
-		. "FROM ciniki_directory_entries "
-		. "WHERE ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "ORDER BY category, name ASC "
+	$strsql = "SELECT ciniki_directory_entries.id, "
+		. "ciniki_directory_categories.name AS cname, "
+		. "ciniki_directory_entries.name, "
+		. "ciniki_directory_entries.image_id, "
+		. "ciniki_directory_entries.url, "
+		. "ciniki_directory_entries.description "
+		. "FROM ciniki_directory_categories, ciniki_directory_category_entries, ciniki_directory_entries "
+		. "WHERE ciniki_directory_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND ciniki_directory_categories.id = ciniki_directory_category_entries.category_id "
+		. "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND ciniki_directory_category_entries.entry_id = ciniki_directory_entries.id "
+		. "AND ciniki_directory_categories.permalink = '" . ciniki_core_dbQuote($ciniki, $cat_permalink) . "' "
+		. "AND ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "ORDER BY ciniki_directory_entries.name ASC "
 		. "";
 	
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	return ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.directory', array(
-		array('container'=>'categories', 'fname'=>'cname', 'name'=>'category',
-			'fields'=>array('cname')),
-		array('container'=>'links', 'fname'=>'name', 'name'=>'link',
-			'fields'=>array('id', 'name', 'url', 'description')),
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+	return ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.directory', array(
+		array('container'=>'categories', 'fname'=>'cname',
+			'fields'=>array('name'=>'cname')),
+		array('container'=>'list', 'fname'=>'id', 
+			'fields'=>array('id', 'title'=>'name', 'image_id', 'url', 'description')),
 		));
 }
 ?>

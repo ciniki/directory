@@ -21,6 +21,7 @@ function ciniki_directory_entryList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'category_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Category'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -36,25 +37,29 @@ function ciniki_directory_entryList($ciniki) {
         return $ac;
     }   
 
-	$strsql = "SELECT id, name, "
-		. "IF(ciniki_directory_entries.category='', 'Uncategorized', ciniki_directory_entries.category) AS sname, "
-		. "url, description FROM ciniki_directory_entries "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "ORDER BY sname "
+	$strsql = "SELECT "
+		. "ciniki_directory_entries.id, "
+		. "ciniki_directory_entries.name, "
+		. "ciniki_directory_entries.url "
+		. "FROM ciniki_directory_category_entries, ciniki_directory_entries "
+		. "WHERE ciniki_directory_category_entries.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+		. "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND ciniki_directory_category_entries.entry_id = ciniki_directory_entries.id "
+		. "AND ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "ORDER BY name "
 		. "";
+
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.directory', array(
-		array('container'=>'sections', 'fname'=>'sname', 'name'=>'section',
-			'fields'=>array('sname')),
 		array('container'=>'entries', 'fname'=>'id', 'name'=>'entry',
-			'fields'=>array('id', 'name', 'url', 'description')),
+			'fields'=>array('id', 'name', 'url')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	if( !isset($rc['sections']) ) {
-		return array('stat'=>'ok', 'sections'=>array());
+	if( !isset($rc['entries']) ) {
+		return array('stat'=>'ok', 'entries'=>array());
 	}
-	return array('stat'=>'ok', 'sections'=>$rc['sections']);
+	return array('stat'=>'ok', 'entries'=>$rc['entries']);
 }
 ?>

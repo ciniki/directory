@@ -21,10 +21,10 @@ function ciniki_directory_entryAdd(&$ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
-		'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
 		'image_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Image'), 
 		'url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'URL'), 
 		'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'), 
+		'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -40,10 +40,136 @@ function ciniki_directory_entryAdd(&$ciniki) {
 		return $ac;
 	}
 
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+
+	//
+	// Get the categories 
+	//
+	$strsql = "SELECT id, name "
+		. "FROM ciniki_directory_categories "
+		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.directory', array(
+		array('container'=>'categories', 'fname'=>'name',
+			'fields'=>array('id', 'name')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['categories']) ) {
+		$categories = $rc['categories'];
+	} else {
+		$categories = array();
+	}
+
+	//  
+	// Turn off autocommit
+	//  
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.directory');
+	if( $rc['stat'] != 'ok' ) { 
+		return $rc;
+	}   
+
 	//
 	// Add the object
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-	return ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.directory.entry', $args, 0x07);
+	$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.directory.entry', $args, 0x04);
+	if( $rc['stat'] != 'ok' ) {
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
+		return $rc;
+	}
+	$entry_id = $rc['id'];
+
+	//
+	// Find categories that need to be added
+	//
+	if( isset($args['categories']) ) {
+		foreach($args['categories'] as $cat) {
+			//
+			// Check if category doesn't exist and add it
+			//
+			if( !isset($categories[$cat]) ) {	
+				//
+				// Create permalink
+				//
+				$cargs = array(
+					'name'=>$cat,
+					'image_id'=>0,
+					'short_description'=>'',
+					'full_description'=>'',
+					);
+				$cargs['permalink'] = ciniki_core_makePermalink($ciniki, $cat);
+
+				//
+				// Check for duplication permalink
+				//
+				$strsql = "SELECT id, name "
+					. "FROM ciniki_directory_categories "
+					. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+					. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $cargs['permalink']) . "' "
+					. "";
+				$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'item');
+				if( $rc['stat'] != 'ok' ) {
+					return $rc;
+				}
+				if( isset($rc['num_rows']) && $rc['num_rows'] > 0 ) {
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1726', 'msg'=>'Category already exists'));
+				}
+				
+				//
+				// Add the object
+				//
+				ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+				$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.directory.category', 
+					$cargs, 0x04);
+				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
+					return $rc;
+				}
+				$categories[$cat] = array('id'=>$rc['id'], 'name'=>$cat);
+			}
+
+			//
+			// Add the category entry
+			//
+			if( isset($categories[$cat]) ) {
+				ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+				$rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.directory.category_entry', 
+					array('category_id'=>$categories[$cat]['id'], 'entry_id'=>$entry_id), 0x04);
+				if( $rc['stat'] != 'ok' ) {
+					ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
+					return $rc;
+				}
+				
+			}
+		}
+
+//		ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.directory', 'ciniki_directory_history',
+//			$args['business_id'], 1, 'ciniki_directory_entries', $entry_id, 'categories', $args['categories']);
+	}
+
+	//
+	// Commit the database changes
+	//
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.directory');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'directory');
+
+	return array('stat'=>'ok', 'id'=>$entry_id);
 }
 ?>

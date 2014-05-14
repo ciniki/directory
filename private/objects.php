@@ -16,10 +16,30 @@ function ciniki_directory_objects($ciniki) {
 		'table'=>'ciniki_directory_entries',
 		'fields'=>array(
 			'name'=>array(),
-			'category'=>array(),
 			'image_id'=>array('ref'=>'ciniki.images.image'),
 			'url'=>array(),
 			'description'=>array(),
+			),
+		'history_table'=>'ciniki_directory_history',
+		);
+	$objects['category'] = array(
+		'name'=>'Category',
+		'table'=>'ciniki_directory_categories',
+		'fields'=>array(
+			'name'=>array(),
+			'permalink'=>array(),
+			'image_id'=>array('ref'=>'ciniki.images.image'),
+			'short_description'=>array(),
+			'full_description'=>array(),
+			),
+		'history_table'=>'ciniki_directory_history',
+		);
+	$objects['category_entry'] = array(
+		'name'=>'Category Entry',
+		'table'=>'ciniki_directory_category_entries',
+		'fields'=>array(
+			'category_id'=>array('ref'=>'ciniki.directory.category'),
+			'entry_id'=>array('ref'=>'ciniki.directory.entry'),
 			),
 		'history_table'=>'ciniki_directory_history',
 		);
