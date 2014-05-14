@@ -43,7 +43,7 @@ function ciniki_directory_entryGet($ciniki) {
 	//
 	// Get the entry
 	//
-	$strsql = "SELECT ciniki_directory_entries.id, name, category, url, description, "
+	$strsql = "SELECT ciniki_directory_entries.id, name, image_id, category, url, description, "
 		. "date_added, last_updated "
 		. "FROM ciniki_directory_entries "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "

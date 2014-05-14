@@ -109,6 +109,14 @@ function ciniki_directory_main() {
 		this.edit.fieldHistoryArgs = function(s, i) {
 			return {'method':'ciniki.directory.entryHistory', 'args':{'business_id':M.curBusinessID, 'entry_id':this.entry_id, 'field':i}};
 		}
+		this.edit.addDropImage = function(iid) {
+			M.ciniki_directory_main.edit.setFieldValue('image_id', iid);
+			return true;
+		};
+		this.edit.deleteImage = function(fid) {
+			this.setFieldValue(fid, 0);
+			return true;
+		};
 		this.edit.addButton('save', 'Save', 'M.ciniki_directory_main.saveEntry();');
 		this.edit.addClose('Cancel');
 
