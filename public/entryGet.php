@@ -56,7 +56,7 @@ function ciniki_directory_entryGet($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['entry']) ) {
-		return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1721', 'msg'=>'Unable to find entry'));
+		return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1717', 'msg'=>'Unable to find entry'));
 	}
 	$entry = $rc['entry'];
 
