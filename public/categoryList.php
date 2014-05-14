@@ -37,6 +37,7 @@ function ciniki_directory_categoryList($ciniki) {
         return $ac;
     }   
 
+
 	if( $args['count'] == 'yes' ) {
 		$strsql = "SELECT ciniki_directory_categories.id, "
 			. "ciniki_directory_categories.name, "
@@ -72,9 +73,39 @@ function ciniki_directory_categoryList($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['categories']) ) {
-		return array('stat'=>'ok', 'categories'=>array());
+		$categories = array();
+	} else {
+		$categories = $rc['categories'];
 	}
 
-	return array('stat'=>'ok', 'categories'=>$rc['categories']);
+
+	if( $args['count'] == 'yes' ) {
+		// Check for uncategorized entries
+		$strsql = "SELECT "
+			. "ciniki_directory_entries.id, "
+			. "ciniki_directory_entries.name, "
+			. "ciniki_directory_entries.url, "
+			. "COUNT(ciniki_directory_category_entries.id) AS num_categories "
+			. "FROM ciniki_directory_entries "
+			. "LEFT JOIN ciniki_directory_category_entries ON ("
+				. "ciniki_directory_entries.id = ciniki_directory_category_entries.entry_id "
+				. "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") "
+			. "WHERE ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "GROUP BY ciniki_directory_entries.id "
+			. "HAVING num_categories = 0 "
+			. "ORDER BY name "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'item');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( $rc['num_rows'] > 0 ) {
+			array_push($categories, array('category'=>array('id'=>'0', 'name'=>'Uncategorized', 'num_entries'=>$rc['num_rows'])));
+		}
+
+	}
+
+	return array('stat'=>'ok', 'categories'=>$categories);
 }
 ?>
