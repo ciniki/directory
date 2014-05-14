@@ -45,7 +45,6 @@ function ciniki_directory_web_tagCloud($ciniki, $settings, $business_id) {
 		. "HAVING num_tags > 0 "
 		. "ORDER BY ciniki_directory_categories.name "
 		. "";
-	error_log($strsql);
 	//
 	// Get the list of posts, sorted by publish_date for use in the web CI List Categories
 	//
@@ -63,7 +62,6 @@ function ciniki_directory_web_tagCloud($ciniki, $settings, $business_id) {
 		$tags = array();
 	}
 
-	error_log(print_r($tags, true));
 	return array('stat'=>'ok', 'tags'=>$tags);
 }
 ?>

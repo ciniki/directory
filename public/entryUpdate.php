@@ -103,7 +103,6 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 		// Check for categories to be removed
 		//
 		foreach($entry_categories as $name => $cat) {
-			error_log('name: ' . $name);
 			if( !in_array($name, $args['categories']) ) {
 				$rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 
 					'ciniki.directory.category_entry', $cat['id'], $cat['uuid'], 0x04);
