@@ -34,7 +34,7 @@ function ciniki_directory_categoryUpdate(&$ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $rc = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.entryUpdate'); 
+    $rc = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.categoryUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
