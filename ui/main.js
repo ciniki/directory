@@ -225,7 +225,6 @@ function ciniki_directory_main() {
 						}
 					}
 					if( cname != null ) {
-						console.log(cname);
 						p.data['categories'] = unescape(cname);
 					}
 					p.refresh();
