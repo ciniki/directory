@@ -43,7 +43,7 @@ function ciniki_directory_web_list($ciniki, $business_id, $cat_permalink) {
 			'fields'=>array('name'=>'cname')),
 		array('container'=>'list', 'fname'=>'id', 
 			'fields'=>array('id', 'title'=>'name', 'permalink', 'image_id', 'url', 
-				'synopsis', 'description', 'is_details')),
+				'description'=>'synopsis', 'is_details')),
 		));
 }
 ?>
