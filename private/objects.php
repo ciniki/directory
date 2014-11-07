@@ -16,6 +16,7 @@ function ciniki_directory_objects($ciniki) {
 		'table'=>'ciniki_directory_entries',
 		'fields'=>array(
 			'name'=>array(),
+			'permalink'=>array(),
 			'image_id'=>array('ref'=>'ciniki.images.image'),
 			'url'=>array(),
 			'synopsis'=>array(),

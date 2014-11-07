@@ -23,7 +23,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 		'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
 		'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'), 
 		'url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'URL'), 
-		'synopsis`'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'), 
+		'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'), 
 		'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'), 
 		'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'), 
         )); 
@@ -50,6 +50,25 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+
+	if( isset($args['name']) ) {
+		$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+		//
+		// Check to make sure the permalink doesn't exist
+		//
+		$strsql = "SELECT id, name, permalink "
+			. "FROM ciniki_web_directory_entries "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'entry');
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['entry']) || $rc['num_rows'] > 0 ) {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2069', 'msg'=>'You must choose a unique name for each entry in the directory'));
+		}
+	}
 
 	//  
 	// Turn off autocommit
@@ -190,6 +209,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 	//
 	// Update the object
 	//
+	error_log(print_r($args, true));
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.directory.entry', 
 		$args['entry_id'], $args, 0x04);
