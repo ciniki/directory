@@ -24,7 +24,7 @@ function ciniki_directory_entryAdd(&$ciniki) {
 		'permalink'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Permalink'), 
 		'image_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Image'), 
 		'url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'URL'), 
-		'synopsis`'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Synopsis'), 
+		'synopsis'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Synopsis'), 
 		'description'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Description'), 
 		'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'), 
 		));
@@ -58,7 +58,7 @@ function ciniki_directory_entryAdd(&$ciniki) {
 	// Check to make sure the permalink doesn't exist
 	//
 	$strsql = "SELECT id, name, permalink "
-		. "FROM ciniki_web_directory_entries "
+		. "FROM ciniki_directory_entries "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
 		. "";
@@ -114,6 +114,9 @@ function ciniki_directory_entryAdd(&$ciniki) {
 	//
 	if( isset($args['categories']) ) {
 		foreach($args['categories'] as $cat) {
+			if( $cat == '' ) {
+				continue;
+			}
 			//
 			// Check if category doesn't exist and add it
 			//
