@@ -18,6 +18,7 @@ function ciniki_directory_objects($ciniki) {
 			'name'=>array(),
 			'image_id'=>array('ref'=>'ciniki.images.image'),
 			'url'=>array(),
+			'synopsis'=>array(),
 			'description'=>array(),
 			),
 		'history_table'=>'ciniki_directory_history',

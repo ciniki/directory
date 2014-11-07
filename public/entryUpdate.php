@@ -23,6 +23,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 		'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
 		'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'), 
 		'url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'URL'), 
+		'synopsis`'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'), 
 		'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'), 
 		'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'), 
         )); 

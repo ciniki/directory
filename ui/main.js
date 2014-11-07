@@ -64,13 +64,16 @@ function ciniki_directory_main() {
 				'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 
 					'controls':'all', 'history':'no'},
 				}},
-            'general':{'label':'General', 'fields':{
+            'general':{'label':'General', 'aside':'yes', 'fields':{
                 'name':{'label':'Name', 'hint':'Company or directory name', 'type':'text'},
 //                'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
                 'url':{'label':'URL', 'hint':'Enter the http:// address for your entries website', 'type':'text'},
                 }}, 
-			'_categories':{'label':'Categories', 'fields':{
+			'_categories':{'label':'Categories', 'aside':'yes', 'fields':{
 				'categories':{'label':'', 'hidelabel':'yes', 'active':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category:'},
+				}},
+			'_synopsis':{'label':'Synopsis', 'fields':{
+				'synopsis':{'label':'', 'hidelabel':'yes', 'hint':'', 'type':'textarea'},
 				}},
 			'_description':{'label':'Additional Information', 'fields':{
 				'description':{'label':'', 'hidelabel':'yes', 'hint':'Add additional information about your entry', 'type':'textarea'},

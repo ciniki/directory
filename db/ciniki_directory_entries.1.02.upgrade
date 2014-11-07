@@ -1,0 +1,5 @@
+#
+#
+ALTER TABLE ciniki_directory_entries ADD COLUMN permalink varchar(150) not null AFTER name;
+ALTER TABLE ciniki_directory_entries ADD COLUMN synopsis varchar(6000) not null AFTER url;
+ALTER TABLE ciniki_directory_entries COMMENT='v1.02';

@@ -14,6 +14,8 @@
 # category:			The category to put the link in.
 # image_id:			The image to use for the entry.
 # url:				The url of the link.
+#
+# synopsis: 		The short description for the listings.
 # description:		The description of the link or their business.
 #
 # date_added:		The date and time the record was added.
@@ -24,13 +26,15 @@ create table ciniki_directory_entries (
 	uuid char(36) not null,
 	business_id int not null,
 	name varchar(150) not null,
+	permalink varchar(150) not null,
 	category varchar(200) not null,
 	image_id int not null,
 	url varchar(255) not null,
+	synopsis varchar(6000) not null,
 	description varchar(6000) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
 	index (name),
 	index sync (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01', CHARACTER SET latin1, COLLATE latin1_swedish_ci;
+) ENGINE='InnoDB', COMMENT='v1.02';
