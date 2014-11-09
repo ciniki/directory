@@ -57,7 +57,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 		// Check to make sure the permalink doesn't exist
 		//
 		$strsql = "SELECT id, name, permalink "
-			. "FROM ciniki_web_directory_entries "
+			. "FROM ciniki_directory_entries "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
 			. "";
@@ -209,7 +209,6 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 	//
 	// Update the object
 	//
-	error_log(print_r($args, true));
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 	$rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.directory.entry', 
 		$args['entry_id'], $args, 0x04);
