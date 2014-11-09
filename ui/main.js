@@ -62,7 +62,14 @@ function ciniki_directory_main() {
         this.edit.sections = { 
 			'_image':{'label':'', 'aside':'yes', 'fields':{
 				'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 
-					'controls':'all', 'history':'no'},
+					'controls':'all', 'history':'no', 
+					'addDropImage':function(iid) {
+						M.ciniki_directory_main.edit.setFieldValue('image_id', iid, null, null);
+						return true;
+						},
+					'addDropImageRefresh':'',
+					'deleteImage':'M.ciniki_directory_main.edit.deletePrimaryImage',
+					},
 				}},
             'general':{'label':'General', 'aside':'yes', 'fields':{
                 'name':{'label':'Name', 'hint':'Company or directory name', 'type':'text'},
@@ -78,11 +85,19 @@ function ciniki_directory_main() {
 			'_description':{'label':'Additional Information', 'fields':{
 				'description':{'label':'', 'hidelabel':'yes', 'hint':'Add additional information about your entry', 'type':'textarea'},
 				}},
+			'images':{'label':'Gallery', 'type':'simplethumbs'},
+			'_images':{'label':'', 'type':'simplegrid', 'num_cols':1,
+				'addTxt':'Add Additional Image',
+				'addFn':'M.ciniki_directory_main.imageAdd();',
+				},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_directory_main.saveEntry();'},
 				'delete':{'label':'Delete', 'fn':'M.ciniki_directory_main.deleteEntry();'},
 				}},
             };  
+		this.edit.sectionData = function(s) { 
+			return this.data[s];
+		};
 		this.edit.fieldValue = function(s, i, d) { 
 			if( this.data[i] == null ) { return ''; } 
 			return this.data[i]; 
@@ -112,13 +127,61 @@ function ciniki_directory_main() {
 		this.edit.fieldHistoryArgs = function(s, i) {
 			return {'method':'ciniki.directory.entryHistory', 'args':{'business_id':M.curBusinessID, 'entry_id':this.entry_id, 'field':i}};
 		}
-		this.edit.addDropImage = function(iid) {
-			M.ciniki_directory_main.edit.setFieldValue('image_id', iid);
+//		this.edit.addDropImage = function(iid) {
+//			M.ciniki_directory_main.edit.setFieldValue('image_id', iid);
+//			return true;
+//		};
+//		this.edit.deleteImage = function(fid) {
+//			this.setFieldValue(fid, 0);
+//			return true;
+//		};
+		this.edit.deletePrimaryImage = function(fid) {
+			this.setFieldValue(fid, 0, null, null);
 			return true;
 		};
-		this.edit.deleteImage = function(fid) {
-			this.setFieldValue(fid, 0);
+		this.edit.addDropImage = function(iid) {
+			var rsp = M.api.getJSON('ciniki.directory.entryImageAdd', 
+				{'business_id':M.curBusinessID, 'image_id':iid, 
+				'entry_id':M.ciniki_directory_main.edit.entry_id});
+			if( rsp.stat != 'ok' ) {
+				M.api.err(rsp);
+				return false;
+			}
 			return true;
+		};
+		this.edit.addDropImageRefresh = function() {
+			if( M.ciniki_directory_main.edit.entry_id > 0 ) {
+				var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'business_id':M.curBusinessID, 
+					'entry_id':M.ciniki_directory_main.edit.entry_id, 'images':'yes'}, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						}
+						var p = M.ciniki_directory_main.edit;
+						p.data.images = rsp.entry.images;
+						p.refreshSection('images');
+						p.show();
+					});
+			}
+			return true;
+		};
+		this.edit.thumbSrc = function(s, i, d) {
+			if( d.image.image_data != null && d.image.image_data != '' ) {
+				return d.image.image_data;
+			} else {
+				return '/ciniki-mods/core/ui/themes/default/img/noimage_75.jpg';
+			}
+		};
+		this.edit.thumbTitle = function(s, i, d) {
+			if( d.image.name != null ) { return d.image.name; }
+			return '';
+		};
+		this.edit.thumbID = function(s, i, d) {
+			if( d.image.id != null ) { return d.image.id; }
+			return 0;
+		};
+		this.edit.thumbFn = function(s, i, d) {
+			return 'M.startApp(\'ciniki.directory.images\',null,\'M.ciniki_directory_main.edit.addDropImageRefresh();\',\'mc\',{\'entry_id\':M.ciniki_directory_main.edit.entry_id,\'entry_image_id\':\'' + d.image.id + '\'});';
 		};
 		this.edit.addButton('save', 'Save', 'M.ciniki_directory_main.saveEntry();');
 		this.edit.addClose('Cancel');
@@ -195,7 +258,7 @@ function ciniki_directory_main() {
 			this.edit.sections._buttons.buttons.delete.visible = 'yes';
 			M.api.getJSONCb('ciniki.directory.entryGet', 
 				{'business_id':M.curBusinessID, 'entry_id':this.edit.entry_id, 
-				'categories':'yes'}, function(rsp) {
+				'categories':'yes', 'images':'yes'}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;
@@ -274,6 +337,23 @@ function ciniki_directory_main() {
 					}
 					M.ciniki_directory_main.edit.close();
 				});
+		}
+	};
+
+	this.imageAdd = function() {
+		if( this.edit.entry_id == 0 ) {
+			var c = this.edit.serializeForm('yes');
+			var rsp = M.api.postJSONCb('ciniki.directory.entryAdd', 
+				{'business_id':M.curBusinessID}, c, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					} 
+					M.ciniki_directory_main.edit.entry_id = rsp.id;
+					M.startApp('ciniki.directory.images',null,'M.ciniki_directory_main.edit.addDropImageRefresh();','mc',{'entry_id':rsp.id,'add':'yes'});
+				});
+		} else {
+			M.startApp('ciniki.directory.images',null,'M.ciniki_directory_main.edit.addDropImageRefresh();','mc',{'entry_id':M.ciniki_directory_main.edit.entry_id,'add':'yes'});
 		}
 	};
 }
