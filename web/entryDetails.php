@@ -46,7 +46,7 @@ function ciniki_directory_web_entryDetails($ciniki, $settings, $business_id, $pe
 		return $rc;
 	}
 	if( !isset($rc['entries']) ) {
-		return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2066', 'msg'=>'Unable to find directory entry.'));
+		return array('stat'=>'404', 'err'=>array('pkg'=>'ciniki', 'code'=>'2067', 'msg'=>'Unable to find directory entry.'));
 	}
 	$entry = array_pop($rc['entries']);
 

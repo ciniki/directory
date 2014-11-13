@@ -66,7 +66,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 			return $rc;
 		}
 		if( isset($rc['entry']) || $rc['num_rows'] > 0 ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2069', 'msg'=>'You must choose a unique name for each entry in the directory'));
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2078', 'msg'=>'You must choose a unique name for each entry in the directory'));
 		}
 	}
 
@@ -171,7 +171,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 					return $rc;
 				}
 				if( isset($rc['num_rows']) && $rc['num_rows'] > 0 ) {
-					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1720', 'msg'=>'Category already exists'));
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2077', 'msg'=>'Category already exists'));
 				}
 				
 				//
