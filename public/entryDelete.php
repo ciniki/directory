@@ -73,10 +73,12 @@ function ciniki_directory_entryDelete(&$ciniki) {
 	// Get the list of categories
 	//
 	$strsql = "SELECT ciniki_directory_category_entries.id, "
-		. "ciniki_directory_category_entries.uuid, "
+		. "ciniki_directory_category_entries.uuid "
 		. "FROM ciniki_directory_category_entries "
 		. "WHERE ciniki_directory_category_entries.entry_id = '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
 		. "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.directory', array(
 		array('container'=>'categories', 'fname'=>'id', 
 			'fields'=>array('id', 'uuid')),
@@ -86,7 +88,6 @@ function ciniki_directory_entryDelete(&$ciniki) {
 	}
 	if( isset($rc['categories']) ) {
 		foreach($rc['categories'] as $cat) {
-			$cat['id'], $cat['uuid']
 			$rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.directory.category_entry', 
 				$cat['id'], $cat['uuid'], 0x04);
 			if( $rc['stat'] != 'ok' ) {

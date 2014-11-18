@@ -21,6 +21,7 @@ function ciniki_directory_entryGet($ciniki) {
         'entry_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Entry'), 
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Categories'), 
         'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'), 
+        'files'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Files'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -46,7 +47,7 @@ function ciniki_directory_entryGet($ciniki) {
 	//
 	$strsql = "SELECT ciniki_directory_entries.id, "
 		. "ciniki_directory_entries.name, "
-		. "ciniki_directory_entries.image_id, "
+		. "ciniki_directory_entries.image_id AS primary_image_id, "
 		. "ciniki_directory_entries.category, "
 		. "ciniki_directory_entries.url, "
 		. "ciniki_directory_entries.synopsis, "
@@ -71,7 +72,8 @@ function ciniki_directory_entryGet($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.directory', array(
 		array('container'=>'entries', 'fname'=>'id', 'name'=>'entry',
-			'fields'=>array('id', 'name', 'image_id', 'category', 'url', 'synopsis', 'description')),
+			'fields'=>array('id', 'name', 'image_id'=>'primary_image_id', 
+				'category', 'url', 'synopsis', 'description')),
 		array('container'=>'images', 'fname'=>'img_id', 'name'=>'image',
 			'fields'=>array('id'=>'img_id', 'name'=>'image_name', 'webflags'=>'image_webflags',
 				'image_id', 'description'=>'image_description', 'url'=>'image_url')),
@@ -119,6 +121,27 @@ function ciniki_directory_entryGet($ciniki) {
 		$entry['categories'] = $rc['categories'][0]['categories']['lists'];
 	} else {
 		$entry['categories'] = '';
+	}
+
+	//
+	// Get any files if requested
+	//
+	if( isset($args['files']) && $args['files'] == 'yes' ) {
+		$strsql = "SELECT id, name, extension, permalink "
+			. "FROM ciniki_directory_entry_files "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_directory_entry_files.entry_id = '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
+			. "";
+		$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.directory', array(
+			array('container'=>'files', 'fname'=>'id', 'name'=>'file',
+				'fields'=>array('id', 'name', 'extension', 'permalink')),
+		));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['files']) ) {
+			$entry['files'] = $rc['files'];
+		}
 	}
 
 	//

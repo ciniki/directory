@@ -39,6 +39,23 @@ function ciniki_directory_objects($ciniki) {
 			),
 		'history_table'=>'ciniki_directory_history',
 		);
+	$objects['entry_file'] = array(
+		'name'=>'Entry File',
+		'sync'=>'yes',
+		'table'=>'ciniki_directory_entry_files',
+		'fields'=>array(
+			'entry_id'=>array('ref'=>'ciniki.directory.file'),
+			'extension'=>array(),
+			'name'=>array(),
+			'permalink'=>array(),
+			'webflags'=>array(),
+			'description'=>array(),
+			'org_filename'=>array(),
+			'publish_date'=>array(),
+			'binary_content'=>array('history'=>'no'),
+			),
+		'history_table'=>'ciniki_directory_history',
+		);
 	$objects['category'] = array(
 		'name'=>'Category',
 		'table'=>'ciniki_directory_categories',

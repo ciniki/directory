@@ -50,6 +50,26 @@ function ciniki_directory_web_entryDetails($ciniki, $settings, $business_id, $pe
 	}
 	$entry = array_pop($rc['entries']);
 
+	//
+	// Check if any files are attached to the entry
+	//
+	$strsql = "SELECT id, name, extension, permalink, description "
+		. "FROM ciniki_directory_entry_files "
+		. "WHERE ciniki_directory_entry_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+		. "AND ciniki_directory_entry_files.entry_id = '" . ciniki_core_dbQuote($ciniki, $entry['id']) . "' "
+		. "";
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.directory', array(
+		array('container'=>'files', 'fname'=>'id', 
+			'fields'=>array('id', 'name', 'extension', 'permalink', 'description')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( isset($rc['files']) ) {
+		$entry['files'] = $rc['files'];
+	}
+
+
 	return array('stat'=>'ok', 'entry'=>$entry);
 }
 ?>

@@ -8,7 +8,7 @@
 // ---------
 // ciniki:
 // settings:		The web settings structure.
-// business_id:		The ID of the business to get events for.
+// business_id:		The ID of the business to get directory entries for.
 // type:			The type of the tag.
 //
 //
