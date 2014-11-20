@@ -10,7 +10,7 @@
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_directory_entryDelete(&$ciniki) {
+function ciniki_directory_entryImageDelete(&$ciniki) {
     //  
     // Find all the required and optional arguments
     //  
