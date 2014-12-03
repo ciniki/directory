@@ -11,6 +11,7 @@
 # business_id:		The business the link is attached to.
 #
 # name:				The name for the link, could be business name or person's name.
+# permalink:		The permalink for the category entry so it can be opened to a full page.
 # category:			The category to put the link in.
 # image_id:			The image to use for the entry.
 # url:				The url of the link.
