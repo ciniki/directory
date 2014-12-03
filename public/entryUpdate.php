@@ -171,7 +171,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 					return $rc;
 				}
 				if( isset($rc['num_rows']) && $rc['num_rows'] > 0 ) {
-					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2077', 'msg'=>'Category already exists'));
+					return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2091', 'msg'=>'Category already exists'));
 				}
 				
 				//

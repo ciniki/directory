@@ -79,7 +79,7 @@ function ciniki_directory_entryImageAdd(&$ciniki) {
 
 
 	if( $args['entry_id'] <= 0 ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2072', 'msg'=>'No entry specified'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2089', 'msg'=>'No entry specified'));
 	}
    
 	//

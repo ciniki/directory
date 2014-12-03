@@ -30,7 +30,7 @@ function ciniki_directory_web_fileDownload($ciniki, $business_id, $entry_permali
 		return $rc;
 	}
 	if( !isset($rc['file']) ) {
-		return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'1245', 'msg'=>'Unable to find requested file'));
+		return array('stat'=>'noexist', 'err'=>array('pkg'=>'ciniki', 'code'=>'1263', 'msg'=>'Unable to find requested file'));
 	}
 	$rc['file']['filename'] = $rc['file']['name'] . '.' . $rc['file']['extension'];
 
