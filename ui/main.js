@@ -198,21 +198,6 @@ function ciniki_directory_main() {
 			}
 			return true;
 		};
-		this.edit.thumbSrc = function(s, i, d) {
-			if( d.image.image_data != null && d.image.image_data != '' ) {
-				return d.image.image_data;
-			} else {
-				return '/ciniki-mods/core/ui/themes/default/img/noimage_75.jpg';
-			}
-		};
-		this.edit.thumbTitle = function(s, i, d) {
-			if( d.image.name != null ) { return d.image.name; }
-			return '';
-		};
-		this.edit.thumbID = function(s, i, d) {
-			if( d.image.id != null ) { return d.image.id; }
-			return 0;
-		};
 		this.edit.thumbFn = function(s, i, d) {
 			return 'M.startApp(\'ciniki.directory.images\',null,\'M.ciniki_directory_main.edit.addDropImageRefresh();\',\'mc\',{\'entry_id\':M.ciniki_directory_main.edit.entry_id,\'entry_image_id\':\'' + d.image.id + '\'});';
 		};
