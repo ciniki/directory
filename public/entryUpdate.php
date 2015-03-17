@@ -20,6 +20,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'entry_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Entry'), 
 		'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
+		'sort_name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Sort Name'), 
 		'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
 		'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'), 
 		'url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'URL'), 
@@ -51,8 +52,8 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
 
-	if( isset($args['name']) ) {
-		$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+	if( isset($args['sort_name']) ) {
+		$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['sort_name']);
 		//
 		// Check to make sure the permalink doesn't exist
 		//
@@ -60,6 +61,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
 			. "FROM ciniki_directory_entries "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+			. "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'entry');
 		if( $rc['stat'] != 'ok' ) {

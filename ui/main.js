@@ -73,7 +73,7 @@ function ciniki_directory_main() {
 				}},
             'general':{'label':'General', 'aside':'yes', 'fields':{
                 'name':{'label':'Name', 'hint':'Company or directory name', 'type':'text'},
-//                'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
+                'sort_name':{'label':'Sort Name', 'hint':'name to be used when sorting the list', 'type':'text'},
                 'url':{'label':'URL', 'hint':'Enter the http:// address for your entries website', 'type':'text'},
                 }}, 
 			'_categories':{'label':'Categories', 'aside':'yes', 'fields':{
@@ -204,6 +204,19 @@ function ciniki_directory_main() {
 		this.edit.addButton('save', 'Save', 'M.ciniki_directory_main.saveEntry();');
 		this.edit.addClose('Cancel');
 
+		//
+		// The tools available to work on directory
+		//
+		this.tools = new M.panel('Directory Tools',
+			'ciniki_directory_main', 'tools',
+			'mc', 'narrow', 'sectioned', 'ciniki.directory.main.tools');
+		this.tools.data = {};
+		this.tools.sections = {
+			'tools':{'label':'Cleanup', 'list':{
+				'dropboxdownload':{'label':'Update from dropbox', 'fn':'M.ciniki_directory_main.updateFromDropbox();'},
+			}},
+			};
+		this.tools.addClose('Back');
 	};
 
 	//
@@ -226,6 +239,13 @@ function ciniki_directory_main() {
 			return false;
 		} 
 		
+		if( M.curBusiness.modules['ciniki.directory'] != null 
+			&& (M.curBusiness.modules['ciniki.directory'].flags&0x01) > 0 ) {
+			this.menu.addButton('tools', 'Tools', 'M.ciniki_directory_main.tools.show(\'M.ciniki_directory_main.showMenu();\');');
+		} else {
+			this.menu.delButton('tools');
+		}
+
 		this.showMenu(cb);
 	};
 
@@ -390,5 +410,15 @@ function ciniki_directory_main() {
 		} else {
 			M.startApp('ciniki.directory.images',null,'M.ciniki_directory_main.edit.addDropImageRefresh();','mc',{'entry_id':M.ciniki_directory_main.edit.entry_id,'add':'yes'});
 		}
+	};
+
+	this.updateFromDropbox = function() {
+		M.api.getJSONCb('ciniki.directory.updateFromDropbox', {'business_id':M.curBusinessID}, function(rsp) {
+			if( rsp.stat != 'ok' ) {
+				M.api.err(rsp);
+				return false;
+			} 
+			alert('Done');
+		});
 	};
 }

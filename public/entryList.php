@@ -51,7 +51,7 @@ function ciniki_directory_entryList($ciniki) {
 			. "WHERE ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "GROUP BY ciniki_directory_entries.id "
 			. "HAVING num_categories = 0 "
-			. "ORDER BY name "
+			. "ORDER BY sort_name, name "
 			. "";
 	} else {
 		$strsql = "SELECT "
@@ -63,7 +63,7 @@ function ciniki_directory_entryList($ciniki) {
 			. "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND ciniki_directory_category_entries.entry_id = ciniki_directory_entries.id "
 			. "AND ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-			. "ORDER BY name "
+			. "ORDER BY sort_name, name "
 			. "";
 	}
 

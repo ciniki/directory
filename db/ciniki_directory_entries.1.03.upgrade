@@ -1,0 +1,6 @@
+#
+#
+ALTER TABLE ciniki_directory_entries DROP COLUMN category;
+ALTER TABLE ciniki_directory_entries ADD COLUMN sort_name varchar(150) not null AFTER name;
+UPDATE ciniki_directory_entries SET sort_name = name;
+ALTER TABLE ciniki_directory_entries COMMENT='v1.03';

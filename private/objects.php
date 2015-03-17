@@ -16,11 +16,12 @@ function ciniki_directory_objects($ciniki) {
 		'table'=>'ciniki_directory_entries',
 		'fields'=>array(
 			'name'=>array(),
+			'sort_name'=>array(),
 			'permalink'=>array(),
-			'image_id'=>array('ref'=>'ciniki.images.image'),
-			'url'=>array(),
-			'synopsis'=>array(),
-			'description'=>array(),
+			'image_id'=>array('ref'=>'ciniki.images.image', 'default'=>'0'),
+			'url'=>array('default'=>''),
+			'synopsis'=>array('default'=>''),
+			'description'=>array('default'=>''),
 			),
 		'history_table'=>'ciniki_directory_history',
 		);
@@ -62,9 +63,9 @@ function ciniki_directory_objects($ciniki) {
 		'fields'=>array(
 			'name'=>array(),
 			'permalink'=>array(),
-			'image_id'=>array('ref'=>'ciniki.images.image'),
-			'short_description'=>array(),
-			'full_description'=>array(),
+			'image_id'=>array('ref'=>'ciniki.images.image', 'default'=>'0'),
+			'short_description'=>array('default'=>''),
+			'full_description'=>array('default'=>''),
 			),
 		'history_table'=>'ciniki_directory_history',
 		);

@@ -21,6 +21,7 @@ function ciniki_directory_entryAdd(&$ciniki) {
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
 		'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
+		'sort_name'=>array('required'=>'no', 'blank'=>'no', 'default'=>'', 'name'=>'Sort Name'), 
 		'permalink'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Permalink'), 
 		'image_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Image'), 
 		'url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'URL'), 
@@ -50,8 +51,11 @@ function ciniki_directory_entryAdd(&$ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
 
+	if( !isset($args['sort_name']) || $args['sort_name'] == '' ) {
+		$args['sort_name'] = $args['name'];
+	}
 	if( !isset($args['permalink']) || $args['permalink'] == '' ) {
-		$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+		$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['sort_name']);
 	}
 
 	//
