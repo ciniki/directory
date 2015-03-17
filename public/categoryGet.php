@@ -41,7 +41,7 @@ function ciniki_directory_categoryGet($ciniki) {
 
 	$strsql = "SELECT ciniki_directory_categories.id, "
 		. "name, permalink, "
-		. "short_description, long_description "
+		. "short_description, full_description "
 		. "FROM ciniki_directory_categories "
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_directory_categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "

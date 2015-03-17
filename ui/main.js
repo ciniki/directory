@@ -49,7 +49,45 @@ function ciniki_directory_main() {
 		this.category.rowFn = function(s, i, d) { return 'M.ciniki_directory_main.showEdit(\'M.ciniki_directory_main.showCategory();\',' + d.entry.id + ');' }
 		this.category.noData = function(s) { return this.sections[s].noData; }
 		this.category.addButton('add', 'Add', 'M.ciniki_directory_main.showEdit(\'M.ciniki_directory_main.showCategory();\',0);');
+		this.category.addButton('edit', 'Edit', 'M.ciniki_directory_main.categoryEdit(\'M.ciniki_directory_main.showCategory();\',M.ciniki_directory_main.category.category_id);');
 		this.category.addClose('Back');
+
+		//
+		// The category edit panel
+		//
+		this.cedit = new M.panel('Category',
+			'ciniki_directory_main', 'cedit',
+			'mc', 'medium', 'sectioned', 'ciniki.directory.main.cedit');
+		this.cedit.data = {};
+		this.cedit.category_id = 0;
+        this.cedit.sections = { 
+//			'_image':{'label':'', 'aside':'yes', 'fields':{
+//				'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 
+//					'controls':'all', 'history':'no', 
+//					'addDropImage':function(iid) {
+//						M.ciniki_directory_main.cedit.setFieldValue('image_id', iid, null, null);
+//						return true;
+//						},
+//					'addDropImageRefresh':'',
+//					'deleteImage':'M.ciniki_directory_main.cedit.deletePrimaryImage',
+//					},
+//				}},
+            'general':{'label':'Category Details', 'fields':{
+                'name':{'label':'Name', 'hint':'category name', 'type':'text'},
+                }}, 
+			'_buttons':{'label':'', 'buttons':{
+				'save':{'label':'Save', 'fn':'M.ciniki_directory_main.categorySave();'},
+				}},
+            };  
+		this.cedit.sectionData = function(s) { 
+			return this.data[s];
+		};
+		this.cedit.fieldValue = function(s, i, d) { 
+			if( this.data[i] == null ) { return ''; } 
+			return this.data[i]; 
+			};
+		this.cedit.addButton('save', 'Save', 'M.ciniki_directory_main.categorySave();');
+		this.cedit.addClose('Cancel');
 
 		//
 		// The edit entry panel 
@@ -285,6 +323,50 @@ function ciniki_directory_main() {
 				p.refresh();
 				p.show(cb);
 			});
+	};
+
+	this.categoryEdit = function(cb, cid) {
+		this.cedit.reset();
+		if( cid != null ) { this.cedit.category_id = cid; }
+		M.api.getJSONCb('ciniki.directory.categoryGet', 
+			{'business_id':M.curBusinessID, 'category_id':this.cedit.category_id}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				var p = M.ciniki_directory_main.cedit;
+				p.data = rsp.category;
+				p.refresh();
+				p.show(cb);
+			});
+	};
+
+	this.categorySave = function() {
+		if( this.cedit.category_id > 0 ) {
+			var c = this.cedit.serializeForm('no');
+			if( c != '' ) {
+				M.api.postJSONCb('ciniki.directory.categoryUpdate', 
+					{'business_id':M.curBusinessID, 'category_id':this.cedit.category_id}, c, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						} 
+						M.ciniki_directory_main.cedit.close();
+					});
+			} else {
+				M.ciniki_directory_main.cedit.close();
+			}
+		} else {
+			var c = this.cedit.serializeForm('yes');
+			M.api.postJSONCb('ciniki.directory.categoryAdd', 
+				{'business_id':M.curBusinessID}, c, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					} 
+					M.ciniki_directory_main.cedit.close();
+				});
+		}
 	};
 
 	this.showEdit = function(cb, eid, cname) {

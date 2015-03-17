@@ -64,8 +64,8 @@ function ciniki_directory_objects($ciniki) {
 			'name'=>array(),
 			'permalink'=>array(),
 			'image_id'=>array('ref'=>'ciniki.images.image', 'default'=>'0'),
-			'short_description'=>array('default'=>''),
-			'full_description'=>array('default'=>''),
+			'synopsis'=>array('default'=>''),
+			'description'=>array('default'=>''),
 			),
 		'history_table'=>'ciniki_directory_history',
 		);

@@ -53,6 +53,7 @@ function ciniki_directory_categoryUpdate(&$ciniki) {
 			. "FROM ciniki_directory_categories "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+			. "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'item');
 		if( $rc['stat'] != 'ok' ) {
