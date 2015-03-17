@@ -34,7 +34,7 @@ function ciniki_directory_web_list($ciniki, $business_id, $cat_permalink) {
 		$strsql .= "AND ciniki_directory_categories.permalink = '" . ciniki_core_dbQuote($ciniki, $cat_permalink) . "' ";
 	}
 	$strsql .= "AND ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-		. "ORDER BY ciniki_directory_categories.name, ciniki_directory_entries.name ASC "
+		. "ORDER BY ciniki_directory_categories.name, ciniki_directory_entries.sort_name, ciniki_directory_entries.name ASC "
 		. "";
 	
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
