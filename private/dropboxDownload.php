@@ -39,7 +39,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
 	//
 	if( !isset($ciniki['business']['modules']['ciniki.directory']['flags'])
 		|| ($ciniki['business']['modules']['ciniki.directory']['flags']&0x01) == 0 ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2265', 'msg'=>'Dropbox integration not enabled'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2289', 'msg'=>'Dropbox integration not enabled'));
 	}
 
 	//
@@ -70,7 +70,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
 		return $rc;
 	}
 	if( !isset($rc['settings']['dropbox-directory']) || $rc['settings']['dropbox-directory'] == '') {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2266', 'msg'=>'Dropbox directory not setup.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2290', 'msg'=>'Dropbox directory not setup.'));
 	}
 	$directory = $rc['settings']['dropbox-directory'];
 	if( $directory[0] != '/' ) {
@@ -95,7 +95,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
 	if( !isset($rc['settings']['apis-dropbox-access-token']) 
 		|| $rc['settings']['apis-dropbox-access-token'] == ''
 		) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2267', 'msg'=>'Dropbox not configured.'));
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2291', 'msg'=>'Dropbox not configured.'));
 	}
 	$access_token = $rc['settings']['apis-dropbox-access-token'];
 
