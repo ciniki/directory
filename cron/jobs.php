@@ -42,19 +42,19 @@ function ciniki_directory_cron_jobs(&$ciniki) {
 		//
 		$rc = ciniki_businesses_checkModuleAccess($ciniki, $business['business_id'], 'ciniki', 'directory');
 		if( $rc['stat'] != 'ok' ) {	
-			ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2635', 'msg'=>'ciniki.directory not configured', 
+			ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'2635', 'msg'=>'ciniki.directory not configured', 
 				'severity'=>30, 'err'=>$rc['err']));
 			continue;
 		}
 
-		ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'0', 'msg'=>'Updating directory from dropbox', 'severity'=>'10'));
+		ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'0', 'msg'=>'Updating directory from dropbox', 'severity'=>'10'));
 
 		//
 		// Update the business directory from dropbox
 		//
 		$rc = ciniki_directory_dropboxDownload($ciniki, $business['business_id']);
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2636', 'msg'=>'Unable to update directory', 
+			ciniki_cron_logMsg($ciniki, $business['business_id'], array('code'=>'2636', 'msg'=>'Unable to update directory', 
 				'severity'=>50, 'err'=>$rc['err']));
 			continue;
 		}
