@@ -10,7 +10,8 @@
 // =======
 // <rsp stat="ok" />
 //
-function ciniki_directory_cron_dropboxUpdate(&$ciniki) {
+function ciniki_directory_cron_jobs(&$ciniki) {
+	ciniki_cron_logMsg($ciniki, 0, array('code'=>'0', 'msg'=>'Checking for directory jobs', 'severity'=>'5'));
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
@@ -28,7 +29,7 @@ function ciniki_directory_cron_dropboxUpdate(&$ciniki) {
 		. "";
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'item');
 	if( $rc['stat'] != 'ok' ) {
-		return $rc;
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2623', 'msg'=>'Unable to get list of businesses with campaigns', 'err'=>$rc['err']));
 	}
 	if( !isset($rc['rows']) ) {
 		return array('stat'=>'ok');
@@ -41,15 +42,21 @@ function ciniki_directory_cron_dropboxUpdate(&$ciniki) {
 		//
 		$rc = ciniki_businesses_checkModuleAccess($ciniki, $business['business_id'], 'ciniki', 'directory');
 		if( $rc['stat'] != 'ok' ) {	
-			error_log('CRON: directory not configured');
+			ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2635', 'msg'=>'ciniki.directory not configured', 
+				'severity'=>30, 'err'=>$rc['err']));
+			continue;
 		}
+
+		ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'0', 'msg'=>'Updating directory from dropbox', 'severity'=>'10'));
+
 		//
 		// Update the business directory from dropbox
 		//
-		error_log('CRON: Updating dropbox for business: ' . $business['business_id']);
 		$rc = ciniki_directory_dropboxDownload($ciniki, $business['business_id']);
 		if( $rc['stat'] != 'ok' ) {
-			error_log('CRON: ' . serialize($rc['err']));
+			ciniki_cron_logMsg($ciniki, $business_id, array('code'=>'2636', 'msg'=>'Unable to update directory', 
+				'severity'=>50, 'err'=>$rc['err']));
+			continue;
 		}
 	}
 
