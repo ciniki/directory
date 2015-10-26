@@ -241,7 +241,8 @@ function ciniki_directory_main() {
 			return true;
 		};
 		this.edit.sponsorRefresh = function() {
-			if( M.ciniki_directory_main.edit.entry_id > 0 ) {
+			M.ciniki_directory_main.edit.show();
+/*			if( M.ciniki_directory_main.edit.entry_id > 0 ) {
 				var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'business_id':M.curBusinessID, 
 					'entry_id':M.ciniki_directory_main.edit.entry_id, 'sponsors':'yes'}, function(rsp) {
 						if( rsp.stat != 'ok' ) {
@@ -254,7 +255,7 @@ function ciniki_directory_main() {
 						p.show();
 					});
 			}
-			return true;
+			return true; */
 		};
 		this.edit.thumbFn = function(s, i, d) {
 			return 'M.startApp(\'ciniki.directory.images\',null,\'M.ciniki_directory_main.edit.addDropImageRefresh();\',\'mc\',{\'entry_id\':M.ciniki_directory_main.edit.entry_id,\'entry_image_id\':\'' + d.image.id + '\'});';
@@ -396,8 +397,7 @@ function ciniki_directory_main() {
 		}
 		if( this.edit.entry_id > 0 ) {
 			this.edit.sections._buttons.buttons.delete.visible = 'yes';
-			M.api.getJSONCb('ciniki.directory.entryGet', 
-				{'business_id':M.curBusinessID, 'entry_id':this.edit.entry_id, 
+			M.api.getJSONCb('ciniki.directory.entryGet', {'business_id':M.curBusinessID, 'entry_id':this.edit.entry_id, 
 				'categories':'yes', 'images':'yes', 'files':'yes'}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
@@ -411,6 +411,7 @@ function ciniki_directory_main() {
 							p.sections._categories.fields.categories.tags.push(rsp.categories[i].category.name);
 						}
 					}
+					p.data.sponsors = [];
 					p.refresh();
 					p.show(cb);
 				});
