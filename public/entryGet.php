@@ -22,6 +22,7 @@ function ciniki_directory_entryGet($ciniki) {
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Categories'), 
         'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'), 
         'files'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Files'), 
+        'sponsors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sponsors'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

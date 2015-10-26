@@ -69,6 +69,22 @@ function ciniki_directory_web_entryDetails($ciniki, $settings, $business_id, $pe
 		$entry['files'] = $rc['files'];
 	}
 
+	//
+	// Get any sponsors for this event, and that references for sponsors is enabled
+	//
+	if( isset($ciniki['business']['modules']['ciniki.sponsors']) 
+		&& ($ciniki['business']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
+		) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'web', 'sponsorRefList');
+		$rc = ciniki_sponsors_web_sponsorRefList($ciniki, $settings, $business_id, 
+			'ciniki.directory.entry', $entry['id']);
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['sponsors']) ) {
+			$entry['sponsors'] = $rc['sponsors'];
+		}
+	}
 
 	return array('stat'=>'ok', 'entry'=>$entry);
 }

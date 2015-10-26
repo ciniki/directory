@@ -135,6 +135,10 @@ function ciniki_directory_main() {
 				'addTxt':'Add Additional Image',
 				'addFn':'M.ciniki_directory_main.imageAdd();',
 				},
+			'sponsors':{'label':'Sponsors', 'type':'simplegrid', 'num_cols':1,
+				'addTxt':'Manage Sponsors',
+				'addFn':'M.ciniki_directory_main.sponsorAdd();',
+				},
 			'_buttons':{'label':'', 'buttons':{
 				'save':{'label':'Save', 'fn':'M.ciniki_directory_main.saveEntry();'},
 				'delete':{'label':'Delete', 'fn':'M.ciniki_directory_main.deleteEntry();'},
@@ -231,6 +235,22 @@ function ciniki_directory_main() {
 						var p = M.ciniki_directory_main.edit;
 						p.data.files = rsp.entry.files;
 						p.refreshSection('files');
+						p.show();
+					});
+			}
+			return true;
+		};
+		this.edit.sponsorRefresh = function() {
+			if( M.ciniki_directory_main.edit.entry_id > 0 ) {
+				var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'business_id':M.curBusinessID, 
+					'entry_id':M.ciniki_directory_main.edit.entry_id, 'sponsors':'yes'}, function(rsp) {
+						if( rsp.stat != 'ok' ) {
+							M.api.err(rsp);
+							return false;
+						}
+						var p = M.ciniki_directory_main.edit;
+						p.data.sponsors = rsp.entry.sponsors;
+						p.refreshSection('sponsors');
 						p.show();
 					});
 			}
@@ -491,6 +511,22 @@ function ciniki_directory_main() {
 				});
 		} else {
 			M.startApp('ciniki.directory.images',null,'M.ciniki_directory_main.edit.addDropImageRefresh();','mc',{'entry_id':M.ciniki_directory_main.edit.entry_id,'add':'yes'});
+		}
+	};
+
+	this.sponsorAdd = function() {
+		if( this.edit.entry_id == 0 ) {
+			var c = this.edit.serializeForm('yes');
+			M.api.postJSONCb('ciniki.directory.entryAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				} 
+				M.ciniki_directory_main.edit.entry_id = rsp.id;
+				M.startApp('ciniki.sponsors.ref',null,'M.ciniki_directory_main.edit.sponsorRefresh();','mc',{'object':'ciniki.directory.entry','object_id':M.ciniki_directory_main.edit.entry_id});
+			});
+		} else {
+			M.startApp('ciniki.sponsors.ref',null,'M.ciniki_directory_main.edit.sponsorRefresh();','mc',{'object':'ciniki.directory.entry','object_id':M.ciniki_directory_main.edit.entry_id});
 		}
 	};
 

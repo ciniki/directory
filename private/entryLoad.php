@@ -116,6 +116,24 @@ function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
 	}
 
 	//
+	// Check if sponsors was requested
+	//
+	if( isset($args['files']) && $args['files'] == 'yes' 
+		&& isset($ciniki['business']['modules']['ciniki.sponsors'])
+		&& ($ciniki['business']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
+		) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'hooks', 'sponsorList');
+		$rc = ciniki_sponsors_hooks_sponsorList($ciniki, $args['business_id'], 
+			array('object'=>'ciniki.directory.entry', 'object_id'=>$entry_id));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['sponsors']) ) {
+			$entry['sponsors'] = $rc['sponsors'];
+		}
+	}
+
+	//
 	// Check if the list of categories should be included in the result
 	//
 	if( isset($args['categories']) && $args['categories'] == 'yes' ) {
