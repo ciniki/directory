@@ -61,7 +61,7 @@ function ciniki_directory_main() {
 		this.cedit.data = {};
 		this.cedit.category_id = 0;
         this.cedit.sections = { 
-//			'_image':{'label':'', 'aside':'yes', 'fields':{
+//			'_image':{'label':'', 'aside':'yes', 'type':'imageform', 'fields':{
 //				'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 
 //					'controls':'all', 'history':'no', 
 //					'addDropImage':function(iid) {
@@ -98,7 +98,7 @@ function ciniki_directory_main() {
 		this.edit.data = {};
 		this.edit.entry_id = 0;
         this.edit.sections = { 
-			'_image':{'label':'', 'aside':'yes', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'type':'imageform', 'fields':{
 				'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 
 					'controls':'all', 'history':'no', 
 					'addDropImage':function(iid) {
