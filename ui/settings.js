@@ -22,7 +22,7 @@ function ciniki_directory_settings() {
 			'ciniki_directory_settings', 'main',
 			'mc', 'medium', 'sectioned', 'ciniki.directory.settings.main');
 		this.main.sections = {
-			'dropbox':{'label':'SMTP', 'fields':{
+			'dropbox':{'label':'Dropbox', 'fields':{
 				'dropbox-directory':{'label':'Directory', 'type':'text'},
 			}},
 		};
@@ -48,9 +48,7 @@ function ciniki_directory_settings() {
 	//
 	this.start = function(cb, appPrefix, aG) {
 		args = {};
-		if( aG != null ) {
-			args = eval(aG);
-		}
+		if( aG != null ) { args = eval(aG); }
 
 		//
 		// Create the app container if it doesn't exist, and clear it out
@@ -69,26 +67,30 @@ function ciniki_directory_settings() {
 	// Grab the stats for the business from the database and present the list of orders.
 	//
 	this.showMain = function(cb) {
-		var rsp = M.api.getJSON('ciniki.directory.settingsGet', {'business_id':M.curBusinessID});
-		if( rsp.stat != 'ok' ) {
-			M.api.err(rsp);
-			return false;
-		}
-		this.main.data = rsp.settings;
-		this.main.refresh();
-		this.main.show(cb);
+		M.api.getJSONCb('ciniki.directory.settingsGet', {'business_id':M.curBusinessID}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_directory_settings.main;
+            p.data = rsp.settings;
+            p.refresh();
+            p.show(cb);
+        });
 	}
 
 	this.saveSettings = function() {
 		var c = this.main.serializeForm('no');
 		if( c != '' ) {
-			var rsp = M.api.postJSON('ciniki.directory.settingsUpdate', 
-				{'business_id':M.curBusinessID}, c);
-			if( rsp.stat != 'ok' ) {
-				M.api.err(rsp);
-				return false;
-			} 
-		}
-		M.ciniki_directory_settings.main.close();
+			M.api.postJSONCb('ciniki.directory.settingsUpdate', {'business_id':M.curBusinessID}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                } 
+                M.ciniki_directory_settings.main.close();
+            });
+		} else {
+            M.ciniki_directory_settings.main.close();
+        }
 	}
 }
