@@ -113,7 +113,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
 	$new_dropbox_cursor = $rc['cursor'];
 	$entries = $rc['entries'];
 	foreach($entries as $entry) {
-		if( preg_match("#^($directory)/([^/]+)/([^/]+)/(info.rtf|info.txt|(primary_image|synopsis|description|images|audio|video|files)/(.*))$#", $entry[0], $matches) ) {
+		if( preg_match("#^($directory)/([^/]+)/([^/]+)/(info.rtf|info.txt|(primary_image|synopsis|description|images|audio|links|videos)/(.*))$#", $entry[0], $matches) ) {
 			$sort_name = $matches[3];
 			if( !isset($updates[$sort_name]) ) {
 				// Create an entry in updates, with the category permalink
