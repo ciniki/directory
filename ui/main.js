@@ -183,7 +183,7 @@ function ciniki_directory_main() {
 		};
 		this.edit.rowFn = function(s, i, d) {
 			if( s == 'files' ) {
-				return 'M.startApp(\'ciniki.directory.files\',null,\'M.ciniki_directory_main.showFile();\',\'mc\',{\'file_id\':\'' + d.file.id + '\'});';
+				return 'M.startApp(\'ciniki.directory.files\',null,\'M.ciniki_directory_main.edit.fileRefresh();\',\'mc\',{\'file_id\':\'' + d.file.id + '\'});';
 			}
 		};
 //		this.edit.addDropImage = function(iid) {

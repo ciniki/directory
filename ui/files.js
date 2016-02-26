@@ -168,6 +168,6 @@ function ciniki_directory_files() {
 	};
 
 	this.downloadFile = function(fid) {
-		M.api.openFile('ciniki.directory.fileDownload', {'business_id':M.curBusinessID, 'file_id':fid});
+		M.api.openFile('ciniki.directory.entryFileDownload', {'business_id':M.curBusinessID, 'file_id':fid});
 	};
 }
