@@ -6,7 +6,7 @@
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// user_id:         The user making the request
 // 
 // Returns
 // -------
@@ -35,27 +35,27 @@ function ciniki_directory_categoryGet($ciniki) {
         return $rc;
     }   
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
-	$date_format = ciniki_users_dateFormat($ciniki);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+    $date_format = ciniki_users_dateFormat($ciniki);
 
-	$strsql = "SELECT ciniki_directory_categories.id, "
-		. "name, permalink, "
-		. "short_description, full_description "
-		. "FROM ciniki_directory_categories "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_directory_categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
-		. "";
-	
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'category');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( !isset($rc['category']) ) {
-		return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1721', 'msg'=>'Unable to find category'));
-	}
+    $strsql = "SELECT ciniki_directory_categories.id, "
+        . "name, permalink, "
+        . "short_description, full_description "
+        . "FROM ciniki_directory_categories "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND ciniki_directory_categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+        . "";
+    
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'category');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( !isset($rc['category']) ) {
+        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1721', 'msg'=>'Unable to find category'));
+    }
 
-	return array('stat'=>'ok', 'category'=>$rc['category']);
+    return array('stat'=>'ok', 'category'=>$rc['category']);
 }
 ?>

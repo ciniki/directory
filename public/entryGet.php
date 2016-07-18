@@ -6,7 +6,7 @@
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// user_id:         The user making the request
 // 
 // Returns
 // -------
@@ -40,6 +40,6 @@ function ciniki_directory_entryGet($ciniki) {
     }   
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'entryLoad');
-	return ciniki_directory_entryLoad($ciniki, $args['business_id'], $args['entry_id'], $args);
+    return ciniki_directory_entryLoad($ciniki, $args['business_id'], $args['entry_id'], $args);
 }
 ?>
