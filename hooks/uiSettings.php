@@ -35,7 +35,6 @@ function ciniki_directory_hooks_uiSettings($ciniki, $business_id, $args) {
             'edit'=>array('app'=>'ciniki.directory.main'),
             );
         $rsp['menu_items'][] = $menu_item;
-
     } 
 
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.directory', 0x01) 
