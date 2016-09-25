@@ -17,7 +17,7 @@ function ciniki_directory_hooks_uiSettings($ciniki, $business_id, $args) {
     //
     // Setup the default response
     //
-    $rsp = array('stat'=>'ok', 'menu_items'=>array());
+    $rsp = array('stat'=>'ok', 'menu_items'=>array(), 'settings_menu_items'=>array());
 
     //
     // Check permissions for what menu items should be available
@@ -35,7 +35,17 @@ function ciniki_directory_hooks_uiSettings($ciniki, $business_id, $args) {
             'edit'=>array('app'=>'ciniki.directory.main'),
             );
         $rsp['menu_items'][] = $menu_item;
+
     } 
+
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.directory', 0x01) 
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $rsp['settings_menu_items'][] = array('priority'=>1600, 'label'=>'Directory', 'edit'=>array('app'=>'ciniki.directory.settings'));
+    }
 
     return $rsp;
 }
