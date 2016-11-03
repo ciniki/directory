@@ -57,7 +57,7 @@ function ciniki_directory_entryDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['entry']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1722', 'msg'=>'The entry does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.17', 'msg'=>'The entry does not exist'));
     }
     $uuid = $rc['entry']['uuid'];
 

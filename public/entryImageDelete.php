@@ -46,7 +46,7 @@ function ciniki_directory_entryImageDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['item']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2074', 'msg'=>'Entry image does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.31', 'msg'=>'Entry image does not exist'));
     }
     $item = $rc['item'];
 

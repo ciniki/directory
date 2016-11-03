@@ -64,7 +64,7 @@ function ciniki_directory_entryFileGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['file']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2086', 'msg'=>'Unable to find file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.25', 'msg'=>'Unable to find file'));
     }
     
     return array('stat'=>'ok', 'file'=>$rc['file']);

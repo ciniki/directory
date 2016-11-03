@@ -46,7 +46,7 @@ function ciniki_directory_entryImageAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
     $rc = ciniki_core_dbUUID($ciniki, 'ciniki.directory');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2070', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.28', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
     }
     $args['uuid'] = $rc['uuid'];
 
@@ -74,12 +74,12 @@ function ciniki_directory_entryImageAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2071', 'msg'=>'You already have an image with this name, please choose another name'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.29', 'msg'=>'You already have an image with this name, please choose another name'));
     }
 
 
     if( $args['entry_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2089', 'msg'=>'No entry specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.30', 'msg'=>'No entry specified'));
     }
    
     //

@@ -39,7 +39,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
     //
     if( !isset($ciniki['business']['modules']['ciniki.directory']['flags'])
         || ($ciniki['business']['modules']['ciniki.directory']['flags']&0x01) == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2289', 'msg'=>'Dropbox integration not enabled'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.5', 'msg'=>'Dropbox integration not enabled'));
     }
 
     //
@@ -70,7 +70,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
         return $rc;
     }
     if( !isset($rc['settings']['dropbox-directory']) || $rc['settings']['dropbox-directory'] == '') {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2290', 'msg'=>'Dropbox directory not setup.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.6', 'msg'=>'Dropbox directory not setup.'));
     }
     $directory = $rc['settings']['dropbox-directory'];
     if( $directory[0] != '/' ) {
@@ -95,7 +95,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
     if( !isset($rc['settings']['apis-dropbox-access-token']) 
         || $rc['settings']['apis-dropbox-access-token'] == ''
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2291', 'msg'=>'Dropbox not configured.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.7', 'msg'=>'Dropbox not configured.'));
     }
     $access_token = $rc['settings']['apis-dropbox-access-token'];
 
@@ -199,7 +199,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
             }
             if( isset($rc['num_rows']) && $rc['num_rows'] > 0 ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
-                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2269', 'msg'=>'Directory entry already exists for ' . $sort_name));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.8', 'msg'=>'Directory entry already exists for ' . $sort_name));
             }
             
             // 
@@ -362,7 +362,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
                             $rc = ciniki_core_dbUUID($ciniki, 'ciniki.directory');
                             if( $rc['stat'] != 'ok' ) {
                                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
-                                return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2285', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.9', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
                             }
                             $uuid = $rc['uuid'];
                             // Add object

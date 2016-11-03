@@ -58,7 +58,7 @@ function ciniki_directory_categoryAdd(&$ciniki) {
         return $rc;
     }
     if( isset($rc['num_rows']) && $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1724', 'msg'=>'Category already exists'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.11', 'msg'=>'Category already exists'));
     }
     
     //

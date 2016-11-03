@@ -55,7 +55,7 @@ function ciniki_directory_entryFileDownload($ciniki) {
         return $rc;
     }
     if( !isset($rc['file']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2084', 'msg'=>'Unable to find file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.23', 'msg'=>'Unable to find file'));
     }
     $filename = $rc['file']['name'] . '.' . $rc['file']['extension'];
 
@@ -67,7 +67,7 @@ function ciniki_directory_entryFileDownload($ciniki) {
     if( $rc['file']['extension'] == 'pdf' ) {
         header('Content-Type: application/pdf');
     } else {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2085', 'msg'=>'Unsupported file type'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.24', 'msg'=>'Unsupported file type'));
     }
     // Specify Filename
     header('Content-Disposition: attachment;filename="' . $filename . '"');

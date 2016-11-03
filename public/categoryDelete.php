@@ -52,7 +52,7 @@ function ciniki_directory_categoryDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['category']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'1725', 'msg'=>'The category does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.12', 'msg'=>'The category does not exist'));
     }
     $uuid = $rc['category']['uuid'];
 

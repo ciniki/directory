@@ -53,7 +53,7 @@ function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
         return $rc;
     }
     if( !isset($rc['entries']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1717', 'msg'=>'Unable to find entry'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.directory.10', 'msg'=>'Unable to find entry'));
     }
     $entry = array_pop($rc['entries']);
     $entry = $entry['entry'];

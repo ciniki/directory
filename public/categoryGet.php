@@ -53,7 +53,7 @@ function ciniki_directory_categoryGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['category']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'1721', 'msg'=>'Unable to find category'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.directory.13', 'msg'=>'Unable to find category'));
     }
 
     return array('stat'=>'ok', 'category'=>$rc['category']);
