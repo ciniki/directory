@@ -2,14 +2,14 @@
 //
 // Description
 // -----------
-// This function will return the list of directory entries for a business.  It is restricted
-// to business owners and sysadmins.
+// This function will return the list of directory entries for a tenant.  It is restricted
+// to tenant owners and sysadmins.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get entries for.
+// tnid:     The ID of the tenant to get entries for.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_directory_categoryList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'count'=>array('required'=>'no', 'default'=>'yes', 'blank'=>'yes', 'name'=>'Number of Entries'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -29,10 +29,10 @@ function ciniki_directory_categoryList($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $ac = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.categoryList');
+    $ac = ciniki_directory_checkAccess($ciniki, $args['tnid'], 'ciniki.directory.categoryList');
     if( $ac['stat'] != 'ok' ) { 
         return $ac;
     }   
@@ -45,9 +45,9 @@ function ciniki_directory_categoryList($ciniki) {
             . "FROM ciniki_directory_categories "
             . "LEFT JOIN ciniki_directory_category_entries ON ( "
                  . "ciniki_directory_categories.id = ciniki_directory_category_entries.category_id "
-                 . "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                 . "AND ciniki_directory_category_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                  . ") "
-            . "WHERE ciniki_directory_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_directory_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "GROUP BY ciniki_directory_categories.id "
             . "ORDER BY ciniki_directory_categories.name "
             . "";
@@ -60,7 +60,7 @@ function ciniki_directory_categoryList($ciniki) {
         $strsql = "SELECT ciniki_directory_categories.id, "
             . "ciniki_directory_categories.name "
             . "FROM ciniki_directory_categories "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY ciniki_directory_categories.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
@@ -89,9 +89,9 @@ function ciniki_directory_categoryList($ciniki) {
             . "FROM ciniki_directory_entries "
             . "LEFT JOIN ciniki_directory_category_entries ON ("
                 . "ciniki_directory_entries.id = ciniki_directory_category_entries.entry_id "
-                . "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_directory_category_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_directory_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "GROUP BY ciniki_directory_entries.id "
             . "HAVING num_categories = 0 "
             . "ORDER BY name "

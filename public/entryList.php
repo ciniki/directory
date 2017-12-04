@@ -2,14 +2,14 @@
 //
 // Description
 // -----------
-// This function will return the list of directory entries for a business.  It is restricted
-// to business owners and sysadmins.
+// This function will return the list of directory entries for a tenant.  It is restricted
+// to tenant owners and sysadmins.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to get entries for.
+// tnid:     The ID of the tenant to get entries for.
 //
 // Returns
 // -------
@@ -20,7 +20,7 @@ function ciniki_directory_entryList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'category_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Category'), 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -29,10 +29,10 @@ function ciniki_directory_entryList($ciniki) {
     $args = $rc['args'];
     
     //  
-    // Check access to business_id as owner, or sys admin. 
+    // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $ac = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.entryList');
+    $ac = ciniki_directory_checkAccess($ciniki, $args['tnid'], 'ciniki.directory.entryList');
     if( $ac['stat'] != 'ok' ) { 
         return $ac;
     }   
@@ -46,9 +46,9 @@ function ciniki_directory_entryList($ciniki) {
             . "FROM ciniki_directory_entries "
             . "LEFT JOIN ciniki_directory_category_entries ON ("
                 . "ciniki_directory_entries.id = ciniki_directory_category_entries.entry_id "
-                . "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_directory_category_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_directory_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "GROUP BY ciniki_directory_entries.id "
             . "HAVING num_categories = 0 "
             . "ORDER BY sort_name, name "
@@ -60,9 +60,9 @@ function ciniki_directory_entryList($ciniki) {
             . "ciniki_directory_entries.url "
             . "FROM ciniki_directory_category_entries, ciniki_directory_entries "
             . "WHERE ciniki_directory_category_entries.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
-            . "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_directory_category_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_directory_category_entries.entry_id = ciniki_directory_entries.id "
-            . "AND ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_directory_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY sort_name, name "
             . "";
     }

@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the entry to.
+// tnid:         The ID of the tenant to add the entry to.
 // name:                The name of the file.  
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_directory_entryFileUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
         'name'=>array('required'=>'no', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'First Name'),
         'description'=>array('required'=>'no', 'trimblanks'=>'yes', 'blank'=>'yes', 'name'=>'Description'),
@@ -38,10 +38,10 @@ function ciniki_directory_entryFileUpdate(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $rc = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.entryFileUpdate', 0); 
+    $rc = ciniki_directory_checkAccess($ciniki, $args['tnid'], 'ciniki.directory.entryFileUpdate', 0); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -50,7 +50,7 @@ function ciniki_directory_entryFileUpdate(&$ciniki) {
     // Get the current information about the file
     //
     $strsql = "SELECT id, entry_id, name, permalink FROM ciniki_directory_entry_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'file');
@@ -67,7 +67,7 @@ function ciniki_directory_entryFileUpdate(&$ciniki) {
     //
     if( isset($args['permalink']) ) {
         $strsql = "SELECT id, name, permalink FROM ciniki_directory_entry_files "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND entry_id = '" . ciniki_core_dbQuote($ciniki, $file['entry_id']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
@@ -85,6 +85,6 @@ function ciniki_directory_entryFileUpdate(&$ciniki) {
     // Update the file in the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    return ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.directory.entry_file', $args['file_id'], $args, 0x07);
+    return ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.directory.entry_file', $args['file_id'], $args, 0x07);
 }
 ?>

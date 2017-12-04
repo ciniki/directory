@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_directory_web_entryDetails($ciniki, $settings, $business_id, $permalink) {
+function ciniki_directory_web_entryDetails($ciniki, $settings, $tnid, $permalink) {
 
     $strsql = "SELECT ciniki_directory_entries.id, "
         . "ciniki_directory_entries.name, "
@@ -29,7 +29,7 @@ function ciniki_directory_web_entryDetails($ciniki, $settings, $business_id, $pe
             . "ciniki_directory_entries.id = ciniki_directory_entry_images.entry_id "
             . "AND (ciniki_directory_entry_images.webflags&0x01) = 0 "
             . ") "
-        . "WHERE ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_directory_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_directory_entries.permalink = '" . ciniki_core_dbQuote($ciniki, $permalink) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -55,7 +55,7 @@ function ciniki_directory_web_entryDetails($ciniki, $settings, $business_id, $pe
     //
     $strsql = "SELECT id, name, extension, permalink, description "
         . "FROM ciniki_directory_entry_files "
-        . "WHERE ciniki_directory_entry_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_directory_entry_files.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_directory_entry_files.entry_id = '" . ciniki_core_dbQuote($ciniki, $entry['id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.directory', array(
@@ -72,11 +72,11 @@ function ciniki_directory_web_entryDetails($ciniki, $settings, $business_id, $pe
     //
     // Get any sponsors for this event, and that references for sponsors is enabled
     //
-    if( isset($ciniki['business']['modules']['ciniki.sponsors']) 
-        && ($ciniki['business']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
+    if( isset($ciniki['tenant']['modules']['ciniki.sponsors']) 
+        && ($ciniki['tenant']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'web', 'sponsorRefList');
-        $rc = ciniki_sponsors_web_sponsorRefList($ciniki, $settings, $business_id, 
+        $rc = ciniki_sponsors_web_sponsorRefList($ciniki, $settings, $tnid, 
             'ciniki.directory.entry', $entry['id']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;

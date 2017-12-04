@@ -17,7 +17,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'entry_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Entry'), 
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
         'sort_name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Sort Name'), 
@@ -35,10 +35,10 @@ function ciniki_directory_entryUpdate(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $rc = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.entryUpdate'); 
+    $rc = ciniki_directory_checkAccess($ciniki, $args['tnid'], 'ciniki.directory.entryUpdate'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -59,7 +59,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
         //
         $strsql = "SELECT id, name, permalink "
             . "FROM ciniki_directory_entries "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
             . "";
@@ -86,7 +86,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
         //
         $strsql = "SELECT id, name "
             . "FROM ciniki_directory_categories "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.directory', array(
             array('container'=>'categories', 'fname'=>'name',
@@ -105,9 +105,9 @@ function ciniki_directory_entryUpdate(&$ciniki) {
             . "ciniki_directory_categories.name "
             . "FROM ciniki_directory_category_entries, ciniki_directory_categories "
             . "WHERE ciniki_directory_category_entries.entry_id = '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
-            . "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_directory_category_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_directory_category_entries.category_id = ciniki_directory_categories.id "
-            . "AND ciniki_directory_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' ". "";
+            . "AND ciniki_directory_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ". "";
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.directory', array(
             array('container'=>'categories', 'fname'=>'name', 
                 'fields'=>array('id', 'uuid', 'name')),
@@ -126,7 +126,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
         //
         foreach($entry_categories as $name => $cat) {
             if( !in_array($name, $args['categories']) ) {
-                $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 
+                $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 
                     'ciniki.directory.category_entry', $cat['id'], $cat['uuid'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
@@ -165,7 +165,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
                 //
                 $strsql = "SELECT id, name "
                     . "FROM ciniki_directory_categories "
-                    . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $cargs['permalink']) . "' "
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'item');
@@ -180,7 +180,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
                 // Add the object
                 //
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-                $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.directory.category', 
+                $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.directory.category', 
                     $cargs, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
@@ -194,7 +194,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
             //
             if( isset($categories[$cat]) ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-                $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.directory.category_entry', 
+                $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.directory.category_entry', 
                     array('category_id'=>$categories[$cat]['id'], 'entry_id'=>$args['entry_id']), 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
@@ -204,7 +204,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
         }
 
 //      ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.directory', 'ciniki_directory_history',
-//          $args['business_id'], 2, 'ciniki_directory_entries', 
+//          $args['tnid'], 2, 'ciniki_directory_entries', 
 //          $args['entry_id'], 'categories', implode('::', $args['categories']));
     }
 
@@ -212,7 +212,7 @@ function ciniki_directory_entryUpdate(&$ciniki) {
     // Update the object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.directory.entry', 
+    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.directory.entry', 
         $args['entry_id'], $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
@@ -228,11 +228,11 @@ function ciniki_directory_entryUpdate(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'directory');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'directory');
 
     return array('stat'=>'ok');
 }

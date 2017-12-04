@@ -7,7 +7,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the entry to.
+// tnid:         The ID of the tenant to add the entry to.
 // entry_image_id:  The ID of the entry image to get.
 //
 // Returns
@@ -19,7 +19,7 @@ function ciniki_directory_entryImageGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'entry_image_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Entry Image'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -29,10 +29,10 @@ function ciniki_directory_entryImageGet($ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $rc = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.entryImageGet'); 
+    $rc = ciniki_directory_checkAccess($ciniki, $args['tnid'], 'ciniki.directory.entryImageGet'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -52,7 +52,7 @@ function ciniki_directory_entryImageGet($ciniki) {
         . "ciniki_directory_entry_images.description, "
         . "ciniki_directory_entry_images.url "
         . "FROM ciniki_directory_entry_images "
-        . "WHERE ciniki_directory_entry_images.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_directory_entry_images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_directory_entry_images.id = '" . ciniki_core_dbQuote($ciniki, $args['entry_image_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');

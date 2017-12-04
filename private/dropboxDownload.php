@@ -6,7 +6,7 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:         The business ID to check the session user against.
+// tnid:         The tenant ID to check the session user against.
 // method:              The requested method.
 //
 // Returns
@@ -16,7 +16,7 @@
 require_once($ciniki['config']['ciniki.core']['lib_dir'] . '/dropbox/lib/Dropbox/autoload.php');
 use \Dropbox as dbx;
 
-function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
+function ciniki_directory_dropboxDownload(&$ciniki, $tnid) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
@@ -35,19 +35,19 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'entryLoad');
 
     //
-    // Check to make sure the dropbox flag is enabled for this business
+    // Check to make sure the dropbox flag is enabled for this tenant
     //
-    if( !isset($ciniki['business']['modules']['ciniki.directory']['flags'])
-        || ($ciniki['business']['modules']['ciniki.directory']['flags']&0x01) == 0 ) {
+    if( !isset($ciniki['tenant']['modules']['ciniki.directory']['flags'])
+        || ($ciniki['tenant']['modules']['ciniki.directory']['flags']&0x01) == 0 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.directory.5', 'msg'=>'Dropbox integration not enabled'));
     }
 
     //
-    // Get the categories available for a business
+    // Get the categories available for a tenant
     //
     $strsql = "SELECT id, name, permalink "
         . "FROM ciniki_directory_categories "
-        . "WHERE ciniki_directory_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_directory_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'cat');
     if( $rc['stat'] != 'ok' ) {
@@ -65,7 +65,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
     $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_directory_settings', 
-        'business_id', $business_id, 'ciniki.directory', 'settings', '');
+        'tnid', $tnid, 'ciniki.directory', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -87,8 +87,8 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
     // Get the settings for dropbox
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_business_details', 
-        'business_id', $business_id, 'ciniki.businesses', 'settings', 'apis');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_tenant_details', 
+        'tnid', $tnid, 'ciniki.tenants', 'settings', 'apis');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -171,7 +171,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
         //
         $strsql = "SELECT id "
             . "FROM ciniki_directory_entries "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $sort_name) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'entry');
@@ -189,7 +189,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
             $permalink = ciniki_core_makePermalink($ciniki, $sort_name);
             $strsql = "SELECT id, name "
                 . "FROM ciniki_directory_categories "
-                . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $cargs['permalink']) . "' "
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'item');
@@ -205,7 +205,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
             // 
             // Add the entry
             //
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.directory.entry', array(
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.directory.entry', array(
                 'name'=>$sort_name,
                 'sort_name'=>$sort_name,
                 'permalink'=>$permalink, 
@@ -238,7 +238,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
         else {
             $entry_id = $rc['entry']['id'];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'entryLoad');
-            $rc = ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, array('images'=>'yes', 'audio'=>'yes', 'video'=>'yes', 'links'=>'yes'));
+            $rc = ciniki_directory_entryLoad($ciniki, $tnid, $entry_id, array('images'=>'yes', 'audio'=>'yes', 'video'=>'yes', 'links'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
                 return $rc;
@@ -253,9 +253,9 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
                 . "ciniki_directory_categories.permalink "
                 . "FROM ciniki_directory_category_entries, ciniki_directory_categories "
                 . "WHERE ciniki_directory_category_entries.entry_id = '" . ciniki_core_dbQuote($ciniki, $entry_id) . "' "
-                . "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_directory_category_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND ciniki_directory_category_entries.category_id = ciniki_directory_categories.id "
-                . "AND ciniki_directory_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND ciniki_directory_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'cat');
             if( $rc['stat'] != 'ok' ) {
@@ -281,14 +281,14 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
         foreach($entry as $field => $details) {
             if( $field == 'info' || $field == 'info' ) {
                 if( $details['mime_type'] == 'text/plain' ) {
-                    $rc = ciniki_core_dropboxOpenTXT($ciniki, $business_id, $client, $details['path']);
+                    $rc = ciniki_core_dropboxOpenTXT($ciniki, $tnid, $client, $details['path']);
                     if( $rc['stat'] != 'ok' ) {
                         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
                         return $rc;
                     }
                     $content = $rc['content'];
                 } elseif( $details['mime_type'] == 'application/rtf' ) {
-                    $rc = ciniki_core_dropboxParseRTFToText($ciniki, $business_id, $client, $details['path']);
+                    $rc = ciniki_core_dropboxParseRTFToText($ciniki, $tnid, $client, $details['path']);
                     if( $rc['stat'] != 'ok' ) {
                         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
                         return $rc;
@@ -307,7 +307,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
                 }
             }
             elseif( $field == 'primary_image' && $details['mime_type'] == 'image/jpeg' ) {
-                $rc = ciniki_images_insertFromDropbox($ciniki, $business_id, $ciniki['session']['user']['id'], $client, $details['path'], 1, '', '', 'no');
+                $rc = ciniki_images_insertFromDropbox($ciniki, $tnid, $ciniki['session']['user']['id'], $client, $details['path'], 1, '', '', 'no');
                 if( $rc['stat'] != 'ok' && $rc['stat'] != 'exists' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
                     return $rc;
@@ -317,7 +317,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
                 }
             }
             elseif( ($field == 'synopsis' || $field == 'description') && $details['mime_type'] == 'application/rtf' ) {
-                $rc = ciniki_core_dropboxParseRTFToText($ciniki, $business_id, $client, $details['path']);
+                $rc = ciniki_core_dropboxParseRTFToText($ciniki, $tnid, $client, $details['path']);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
                     return $rc;
@@ -327,7 +327,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
                 }
             }
             elseif( ($field == 'synopsis' || $field == 'description') && $details['mime_type'] == 'text/plain' ) {
-                $rc = ciniki_core_dropboxOpenTXT($ciniki, $business_id, $client, $details['path']);
+                $rc = ciniki_core_dropboxOpenTXT($ciniki, $tnid, $client, $details['path']);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
                     return $rc;
@@ -342,7 +342,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
                 //
                 foreach($details as $img) {
                     if( $img['mime_type'] == 'image/jpeg' ) {
-                        $rc = ciniki_images_insertFromDropbox($ciniki, $business_id, $ciniki['session']['user']['id'], $client, $img['path'], 1, '', '', 'no');
+                        $rc = ciniki_images_insertFromDropbox($ciniki, $tnid, $ciniki['session']['user']['id'], $client, $img['path'], 1, '', '', 'no');
                         if( $rc['stat'] != 'ok' && $rc['stat'] != 'exists' ) {
                             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
                             return $rc;
@@ -366,7 +366,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
                             }
                             $uuid = $rc['uuid'];
                             // Add object
-                            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.directory.entry_image', array(
+                            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.directory.entry_image', array(
                                 'uuid'=>$uuid,
                                 'entry_id'=>$entry_id,
                                 'name'=>'',
@@ -392,7 +392,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
         if( !isset($categories[$entry['category']]) ) {
             // Add category
             $permalink = ciniki_core_makePermalink($ciniki, $entry['category']);
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.directory.category', array(
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.directory.category', array(
                 'name'=>$entry['category'],
                 'permalink'=>$permalink), 0x04);
             if( $rc['stat'] != 'ok' ) {
@@ -403,7 +403,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
         }
         if( !isset($ciniki_entry['categories'][$entry['category']]) ) {
             // Add the category entry
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.directory.category_entry', array(
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.directory.category_entry', array(
                 'category_id'=>$categories[$entry['category']],
                 'entry_id'=>$entry_id), 0x04);
             if( $rc['stat'] != 'ok' ) {
@@ -416,7 +416,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
         // Update the entry
         //
         if( count($update_args) > 0 ) {
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.directory.entry', $entry_id, $update_args, 0x04);
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.directory.entry', $entry_id, $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
                 return $rc;
@@ -435,8 +435,8 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
     //
     // Update the dropbox cursor
     //
-    $strsql = "INSERT INTO ciniki_directory_settings (business_id, detail_key, detail_value, date_added, last_updated) "
-        . "VALUES ('" . ciniki_core_dbQuote($ciniki, $business_id) . "'"
+    $strsql = "INSERT INTO ciniki_directory_settings (tnid, detail_key, detail_value, date_added, last_updated) "
+        . "VALUES ('" . ciniki_core_dbQuote($ciniki, $tnid) . "'"
         . ", '" . ciniki_core_dbQuote($ciniki, 'dropbox-cursor') . "'"
         . ", '" . ciniki_core_dbQuote($ciniki, $new_dropbox_cursor) . "'"
         . ", UTC_TIMESTAMP(), UTC_TIMESTAMP()) "
@@ -448,7 +448,7 @@ function ciniki_directory_dropboxDownload(&$ciniki, $business_id) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.directory');
         return $rc;
     }
-    ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.directory', 'ciniki_directory_history', $business_id, 
+    ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.directory', 'ciniki_directory_history', $tnid, 
         2, 'ciniki_directory_settings', 'dropbox-cursor', 'detail_value', $new_dropbox_cursor);
     $ciniki['syncqueue'][] = array('push'=>'ciniki.directory.setting', 
         'args'=>array('id'=>'dropbox-cursor'));

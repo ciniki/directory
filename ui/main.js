@@ -153,7 +153,7 @@ function ciniki_directory_main() {
             };
         this.edit.liveSearchCb = function(s, i, value) {
             if( i == 'category' ) {
-                var rsp = M.api.getJSONBgCb('ciniki.directory.entrySearchField', {'business_id':M.curBusinessID, 'field':i, 'start_needle':value, 'limit':15},
+                var rsp = M.api.getJSONBgCb('ciniki.directory.entrySearchField', {'tnid':M.curTenantID, 'field':i, 'start_needle':value, 'limit':15},
                     function(rsp) {
                         M.ciniki_directory_main.edit.liveSearchShow(s, i, M.gE(M.ciniki_directory_main.edit.panelUID + '_' + i), rsp.results);
                     });
@@ -174,7 +174,7 @@ function ciniki_directory_main() {
             this.removeLiveSearch(s, eid);
         };
         this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.directory.entryHistory', 'args':{'business_id':M.curBusinessID, 'entry_id':this.entry_id, 'field':i}};
+            return {'method':'ciniki.directory.entryHistory', 'args':{'tnid':M.curTenantID, 'entry_id':this.entry_id, 'field':i}};
         };
         this.edit.cellValue = function(s, i, j, d) {
             if( s == 'files' && j == 0 ) { 
@@ -200,7 +200,7 @@ function ciniki_directory_main() {
         };
         this.edit.addDropImage = function(iid) {
             var rsp = M.api.getJSON('ciniki.directory.entryImageAdd', 
-                {'business_id':M.curBusinessID, 'image_id':iid, 
+                {'tnid':M.curTenantID, 'image_id':iid, 
                 'entry_id':M.ciniki_directory_main.edit.entry_id});
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
@@ -210,7 +210,7 @@ function ciniki_directory_main() {
         };
         this.edit.addDropImageRefresh = function() {
             if( M.ciniki_directory_main.edit.entry_id > 0 ) {
-                var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'business_id':M.curBusinessID, 
+                var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'tnid':M.curTenantID, 
                     'entry_id':M.ciniki_directory_main.edit.entry_id, 'images':'yes'}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -226,7 +226,7 @@ function ciniki_directory_main() {
         };
         this.edit.fileRefresh = function() {
             if( M.ciniki_directory_main.edit.entry_id > 0 ) {
-                var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'business_id':M.curBusinessID, 
+                var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'tnid':M.curTenantID, 
                     'entry_id':M.ciniki_directory_main.edit.entry_id, 'files':'yes'}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -243,7 +243,7 @@ function ciniki_directory_main() {
         this.edit.sponsorRefresh = function() {
             M.ciniki_directory_main.edit.show();
 /*          if( M.ciniki_directory_main.edit.entry_id > 0 ) {
-                var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'business_id':M.curBusinessID, 
+                var rsp = M.api.getJSONCb('ciniki.directory.entryGet', {'tnid':M.curTenantID, 
                     'entry_id':M.ciniki_directory_main.edit.entry_id, 'sponsors':'yes'}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -298,8 +298,8 @@ function ciniki_directory_main() {
             return false;
         } 
         
-        if( M.curBusiness.modules['ciniki.directory'] != null 
-            && (M.curBusiness.modules['ciniki.directory'].flags&0x01) > 0 ) {
+        if( M.curTenant.modules['ciniki.directory'] != null 
+            && (M.curTenant.modules['ciniki.directory'].flags&0x01) > 0 ) {
             this.menu.addButton('tools', 'Tools', 'M.ciniki_directory_main.tools.show(\'M.ciniki_directory_main.showMenu();\');');
         } else {
             this.menu.delButton('tools');
@@ -313,7 +313,7 @@ function ciniki_directory_main() {
         //
         // Grab the list of sites
         //
-        M.api.getJSONCb('ciniki.directory.categoryList', {'business_id':M.curBusinessID,
+        M.api.getJSONCb('ciniki.directory.categoryList', {'tnid':M.curTenantID,
             'count':'yes'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -333,7 +333,7 @@ function ciniki_directory_main() {
         //
         // Grab the list of sites
         //
-        M.api.getJSONCb('ciniki.directory.entryList', {'business_id':M.curBusinessID,
+        M.api.getJSONCb('ciniki.directory.entryList', {'tnid':M.curTenantID,
             'category_id':this.category.category_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -350,7 +350,7 @@ function ciniki_directory_main() {
         this.cedit.reset();
         if( cid != null ) { this.cedit.category_id = cid; }
         M.api.getJSONCb('ciniki.directory.categoryGet', 
-            {'business_id':M.curBusinessID, 'category_id':this.cedit.category_id}, function(rsp) {
+            {'tnid':M.curTenantID, 'category_id':this.cedit.category_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -367,7 +367,7 @@ function ciniki_directory_main() {
             var c = this.cedit.serializeForm('no');
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.directory.categoryUpdate', 
-                    {'business_id':M.curBusinessID, 'category_id':this.cedit.category_id}, c, function(rsp) {
+                    {'tnid':M.curTenantID, 'category_id':this.cedit.category_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
                             return false;
@@ -380,7 +380,7 @@ function ciniki_directory_main() {
         } else {
             var c = this.cedit.serializeForm('yes');
             M.api.postJSONCb('ciniki.directory.categoryAdd', 
-                {'business_id':M.curBusinessID}, c, function(rsp) {
+                {'tnid':M.curTenantID}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -397,7 +397,7 @@ function ciniki_directory_main() {
         }
         if( this.edit.entry_id > 0 ) {
             this.edit.sections._buttons.buttons.delete.visible = 'yes';
-            M.api.getJSONCb('ciniki.directory.entryGet', {'business_id':M.curBusinessID, 'entry_id':this.edit.entry_id, 
+            M.api.getJSONCb('ciniki.directory.entryGet', {'tnid':M.curTenantID, 'entry_id':this.edit.entry_id, 
                 'categories':'yes', 'images':'yes', 'files':'yes'}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -418,7 +418,7 @@ function ciniki_directory_main() {
         } else {
             this.edit.sections._buttons.buttons.delete.visible = 'no';
             M.api.getJSONCb('ciniki.directory.categoryList', 
-                {'business_id':M.curBusinessID, 'count':'no'}, function(rsp) {
+                {'tnid':M.curTenantID, 'count':'no'}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -445,7 +445,7 @@ function ciniki_directory_main() {
             var c = this.edit.serializeForm('no');
             if( c != '' ) {
                 var rsp = M.api.postJSONCb('ciniki.directory.entryUpdate', 
-                    {'business_id':M.curBusinessID, 'entry_id':this.edit.entry_id}, c, function(rsp) {
+                    {'tnid':M.curTenantID, 'entry_id':this.edit.entry_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
                             return false;
@@ -458,7 +458,7 @@ function ciniki_directory_main() {
         } else {
             var c = this.edit.serializeForm('yes');
             var rsp = M.api.postJSONCb('ciniki.directory.entryAdd', 
-                {'business_id':M.curBusinessID}, c, function(rsp) {
+                {'tnid':M.curTenantID}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -471,7 +471,7 @@ function ciniki_directory_main() {
     this.deleteEntry = function() {
         if( confirm("Are you sure you want to remove '" + this.edit.data.name + "' as an entry ?") ) {
             var rsp = M.api.getJSONCb('ciniki.directory.entryDelete', 
-                {'business_id':M.curBusinessID, 'entry_id':M.ciniki_directory_main.edit.entry_id}, function(rsp) {
+                {'tnid':M.curTenantID, 'entry_id':M.ciniki_directory_main.edit.entry_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -485,7 +485,7 @@ function ciniki_directory_main() {
         if( this.edit.entry_id == 0 ) {
             var c = this.edit.serializeForm('yes');
             var rsp = M.api.postJSONCb('ciniki.directory.entryAdd', 
-                {'business_id':M.curBusinessID}, c, function(rsp) {
+                {'tnid':M.curTenantID}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -502,7 +502,7 @@ function ciniki_directory_main() {
         if( this.edit.entry_id == 0 ) {
             var c = this.edit.serializeForm('yes');
             var rsp = M.api.postJSONCb('ciniki.directory.entryAdd', 
-                {'business_id':M.curBusinessID}, c, function(rsp) {
+                {'tnid':M.curTenantID}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -518,7 +518,7 @@ function ciniki_directory_main() {
     this.sponsorAdd = function() {
         if( this.edit.entry_id == 0 ) {
             var c = this.edit.serializeForm('yes');
-            M.api.postJSONCb('ciniki.directory.entryAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.directory.entryAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -532,7 +532,7 @@ function ciniki_directory_main() {
     };
 
     this.updateFromDropbox = function() {
-        M.api.getJSONCb('ciniki.directory.updateFromDropbox', {'business_id':M.curBusinessID}, function(rsp) {
+        M.api.getJSONCb('ciniki.directory.updateFromDropbox', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;

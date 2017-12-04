@@ -7,7 +7,7 @@
 // Returns
 // -------
 //
-function ciniki_directory_web_fileDownload($ciniki, $business_id, $entry_permalink, $file_permalink) {
+function ciniki_directory_web_fileDownload($ciniki, $tnid, $entry_permalink, $file_permalink) {
 
     //
     // Get the file details
@@ -18,10 +18,10 @@ function ciniki_directory_web_fileDownload($ciniki, $business_id, $entry_permali
         . "ciniki_directory_entry_files.extension, "
         . "ciniki_directory_entry_files.binary_content "
         . "FROM ciniki_directory_entries, ciniki_directory_entry_files "
-        . "WHERE ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_directory_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_directory_entries.permalink = '" . ciniki_core_dbQuote($ciniki, $entry_permalink) . "' "
         . "AND ciniki_directory_entries.id = ciniki_directory_entry_files.entry_id "
-        . "AND ciniki_directory_entry_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_directory_entry_files.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND CONCAT_WS('.', ciniki_directory_entry_files.permalink, ciniki_directory_entry_files.extension) = '" . ciniki_core_dbQuote($ciniki, $file_permalink) . "' "
         . "AND (ciniki_directory_entry_files.webflags&0x01) = 0 "       // Make sure file is to be visible
         . "";

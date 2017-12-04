@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This method will add a new directory entry to a business.  
+// This method will add a new directory entry to a tenant.  
 //
 // Arguments
 // ---------
@@ -19,7 +19,7 @@ function ciniki_directory_categoryAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
         'image_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Image'), 
         'short_description'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Description'), 
@@ -31,10 +31,10 @@ function ciniki_directory_categoryAdd(&$ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id as owner
+    // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $ac = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.categoryAdd');
+    $ac = ciniki_directory_checkAccess($ciniki, $args['tnid'], 'ciniki.directory.categoryAdd');
     if( $ac['stat'] != 'ok' ) {
         return $ac;
     }
@@ -50,7 +50,7 @@ function ciniki_directory_categoryAdd(&$ciniki) {
     //
     $strsql = "SELECT id, name "
         . "FROM ciniki_directory_categories "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.directory', 'item');
@@ -65,6 +65,6 @@ function ciniki_directory_categoryAdd(&$ciniki) {
     // Add the object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    return ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.directory.category', $args, 0x07);
+    return ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.directory.category', $args, 0x07);
 }
 ?>

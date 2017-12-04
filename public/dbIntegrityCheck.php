@@ -16,7 +16,7 @@ function ciniki_directory_dbIntegrityCheck($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'fix'=>array('required'=>'no', 'default'=>'no', 'name'=>'Fix Problems'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -25,10 +25,10 @@ function ciniki_directory_dbIntegrityCheck($ciniki) {
     $args = $rc['args'];
     
     //
-    // Check access to business_id as owner, or sys admin
+    // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $rc = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.dbIntegrityCheck', 0);
+    $rc = ciniki_directory_checkAccess($ciniki, $args['tnid'], 'ciniki.directory.dbIntegrityCheck', 0);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -42,7 +42,7 @@ function ciniki_directory_dbIntegrityCheck($ciniki) {
         //
         // Update the history for ciniki_directory
         //
-        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.directory', $args['business_id'],
+        $rc = ciniki_core_dbFixTableHistory($ciniki, 'ciniki.directory', $args['tnid'],
             'ciniki_directory_entry', 'ciniki_directory_history', 
             array('uuid', 'name', 'category', 'url', 'description'));
         if( $rc['stat'] != 'ok' ) {

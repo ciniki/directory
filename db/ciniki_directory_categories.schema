@@ -7,7 +7,7 @@
 # ------
 # id:               The ID assigned to the link.
 # uuid:             The Universal Unique ID.
-# business_id:      The business the link is attached to.
+# tnid:             The tenant the link is attached to.
 #
 # name:                 The name for the category.
 # permalink:            The permalink for the url to the category.
@@ -21,7 +21,7 @@
 create table ciniki_directory_categories (
     id int not null auto_increment,
     uuid char(36) not null,
-    business_id int not null,
+    tnid int not null,
     name varchar(150) not null,
     permalink varchar(150) not null,
     image_id int not null,
@@ -31,5 +31,5 @@ create table ciniki_directory_categories (
     last_updated datetime not null,
     primary key (id),
     index (name),
-    index sync (business_id, uuid, last_updated)
+    index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

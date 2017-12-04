@@ -17,7 +17,7 @@ function ciniki_directory_updateFromDropbox(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -26,15 +26,15 @@ function ciniki_directory_updateFromDropbox(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'checkAccess');
-    $rc = ciniki_directory_checkAccess($ciniki, $args['business_id'], 'ciniki.directory.updateFromDropbox'); 
+    $rc = ciniki_directory_checkAccess($ciniki, $args['tnid'], 'ciniki.directory.updateFromDropbox'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'directory', 'private', 'dropboxDownload');
-    return ciniki_directory_dropboxDownload($ciniki, $args['business_id']);
+    return ciniki_directory_dropboxDownload($ciniki, $args['tnid']);
 }
 ?>

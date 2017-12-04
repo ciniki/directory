@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_directory_sync_objects($ciniki, &$sync, $business_id, $args) {
+function ciniki_directory_sync_objects($ciniki, &$sync, $tnid, $args) {
     
     $objects = array();
     $objects['entry'] = array(

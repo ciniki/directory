@@ -11,7 +11,7 @@
 // Returns
 // -------
 //
-function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
+function ciniki_directory_entryLoad($ciniki, $tnid, $entry_id, $args) {
 
     //
     // Get the entry
@@ -34,9 +34,9 @@ function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
         . "FROM ciniki_directory_entries "
         . "LEFT JOIN ciniki_directory_entry_images ON ("
             . "ciniki_directory_entries.id = ciniki_directory_entry_images.entry_id "
-            . "AND ciniki_directory_entry_images.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_directory_entry_images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_directory_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_directory_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_directory_entries.id = '" . ciniki_core_dbQuote($ciniki, $entry_id) . "' "
         . "";
     
@@ -62,7 +62,7 @@ function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
     if( isset($entry['images']) ) {
         foreach($entry['images'] as $img_id => $img) {
             if( isset($img['image']['image_id']) && $img['image']['image_id'] > 0 ) {
-                $rc = ciniki_images_loadCacheThumbnail($ciniki, $business_id, $img['image']['image_id'], 75);
+                $rc = ciniki_images_loadCacheThumbnail($ciniki, $tnid, $img['image']['image_id'], 75);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
@@ -77,9 +77,9 @@ function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
     $strsql = "SELECT 'cat' AS type, name AS lists "
         . "FROM ciniki_directory_category_entries, ciniki_directory_categories "
         . "WHERE ciniki_directory_category_entries.entry_id = '" . ciniki_core_dbQuote($ciniki, $entry_id) . "' "
-        . "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_directory_category_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_directory_category_entries.category_id = ciniki_directory_categories.id "
-        . "AND ciniki_directory_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' ". "";
+        . "AND ciniki_directory_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ". "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.directory', array(
         array('container'=>'categories', 'fname'=>'type', 'name'=>'categories',
@@ -100,7 +100,7 @@ function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
     if( isset($args['files']) && $args['files'] == 'yes' ) {
         $strsql = "SELECT id, name, extension, permalink "
             . "FROM ciniki_directory_entry_files "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_directory_entry_files.entry_id = '" . ciniki_core_dbQuote($ciniki, $entry_id) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.directory', array(
@@ -119,11 +119,11 @@ function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
     // Check if sponsors was requested
     //
     if( isset($args['files']) && $args['files'] == 'yes' 
-        && isset($ciniki['business']['modules']['ciniki.sponsors'])
-        && ($ciniki['business']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
+        && isset($ciniki['tenant']['modules']['ciniki.sponsors'])
+        && ($ciniki['tenant']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'hooks', 'sponsorList');
-        $rc = ciniki_sponsors_hooks_sponsorList($ciniki, $args['business_id'], 
+        $rc = ciniki_sponsors_hooks_sponsorList($ciniki, $args['tnid'], 
             array('object'=>'ciniki.directory.entry', 'object_id'=>$entry_id));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -139,7 +139,7 @@ function ciniki_directory_entryLoad($ciniki, $business_id, $entry_id, $args) {
     if( isset($args['categories']) && $args['categories'] == 'yes' ) {
         $strsql = "SELECT id, name "
             . "FROM ciniki_directory_categories "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.directory', array(
             array('container'=>'categories', 'fname'=>'id', 'name'=>'category',

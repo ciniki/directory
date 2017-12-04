@@ -8,20 +8,20 @@
 // ---------
 // ciniki:
 // settings:        The web settings structure.
-// business_id:     The ID of the business to get directory entries for.
+// tnid:     The ID of the tenant to get directory entries for.
 // type:            The type of the tag.
 //
 //
 // Returns
 // -------
 //
-function ciniki_directory_web_tagCloud($ciniki, $settings, $business_id) {
+function ciniki_directory_web_tagCloud($ciniki, $settings, $tnid) {
 
     //
-    // Load the business settings
+    // Load the tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -38,9 +38,9 @@ function ciniki_directory_web_tagCloud($ciniki, $settings, $business_id) {
         . "FROM ciniki_directory_categories "
         . "LEFT JOIN ciniki_directory_category_entries ON ("
             . "ciniki_directory_categories.id = ciniki_directory_category_entries.category_id "
-            . "AND ciniki_directory_category_entries.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_directory_category_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_directory_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_directory_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "GROUP BY ciniki_directory_categories.name "
         . "HAVING num_tags > 0 "
         . "ORDER BY ciniki_directory_categories.name "
