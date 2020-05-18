@@ -294,7 +294,7 @@ function ciniki_directory_main() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_directory_main', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         } 
         
@@ -469,7 +469,7 @@ function ciniki_directory_main() {
     };
 
     this.deleteEntry = function() {
-        if( confirm("Are you sure you want to remove '" + this.edit.data.name + "' as an entry ?") ) {
+        M.confirm("Are you sure you want to remove '" + this.edit.data.name + "' as an entry ?",null,function() {
             var rsp = M.api.getJSONCb('ciniki.directory.entryDelete', 
                 {'tnid':M.curTenantID, 'entry_id':M.ciniki_directory_main.edit.entry_id}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
@@ -478,7 +478,7 @@ function ciniki_directory_main() {
                     }
                     M.ciniki_directory_main.edit.close();
                 });
-        }
+        });
     };
 
     this.fileAdd = function() {
@@ -537,7 +537,7 @@ function ciniki_directory_main() {
                 M.api.err(rsp);
                 return false;
             } 
-            alert('Done');
+            M.alert('Done');
         });
     };
 }
